@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Friendly Neighborhood: the Palisades Fire, replayed</title>
+<meta name="description" content="Replay the first 24 hours of the 2025 Palisades Fire on real data and see how shutting off destroyed homes' water lines keeps hydrant pressure up.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* page (follows the viewer's theme) */
+  --bg:#EDEDE4; --fg:#0A0A0A; --dim:#55554F; --line:#0A0A0A; --soft:#D5D5CA;
+  --heat:#D6360E; --signal:#0070A0; --lock:#3F7A00;
+  /* the replay stage is always a dark instrument */
+  --v:#000; --v2:#0B0B0B; --vl:#2E2E2B; --vl2:#4A4A45; --bone:#F2F2EA; --ash:#8C8C85;
+  --n-heat:#FF4A1C; --n-signal:#29E3FF; --n-lock:#C6FF3D; --n-warn:#FFC21A;
+  --disp:"Archivo","Arial Black",Impact,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --body:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#000; --fg:#F2F2EA; --dim:#8C8C85; --line:#F2F2EA; --soft:#1C1C1A;
+  --heat:#FF4A1C; --signal:#29E3FF; --lock:#C6FF3D;
+}}
+:root[data-theme="dark"]{
+  --bg:#000; --fg:#F2F2EA; --dim:#8C8C85; --line:#F2F2EA; --soft:#1C1C1A;
+  --heat:#FF4A1C; --signal:#29E3FF; --lock:#C6FF3D;
+}
+*,*::before,*::after{box-sizing:inherit;border-radius:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration-thickness:2px;text-underline-offset:3px}
+a:hover{background:var(--fg);color:var(--bg);text-decoration:none}
+:focus-visible{outline:3px solid var(--n-warn);outline-offset:2px}
+button{font:inherit;color:inherit;cursor:pointer}
+.frame{max-width:1440px;margin:0 auto;border-left:2px solid var(--line);border-right:2px solid var(--line)}
+.mono{font-family:var(--mono)}
+.lbl{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+
+/* ---------- header: a row of cells ---------- */
+.top{display:grid;grid-template-columns:auto 1fr repeat(3,auto) auto;border-bottom:2px solid var(--line);font-family:var(--mono);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.top > *{padding:14px 18px;border-right:2px solid var(--line);display:flex;align-items:center;text-decoration:none}
+.top > *:last-child{border-right:0}
+.top .id{background:var(--fg);color:var(--bg);font-weight:700}
+.top .name{font-family:var(--disp);font-variation-settings:"wdth" 118;font-weight:800;font-size:17px;letter-spacing:0;text-transform:none}
+.top a:hover{background:var(--fg);color:var(--bg)}
+.top .off{color:var(--dim)}
+.top .off::before{content:"";width:8px;height:8px;background:var(--dim);margin-right:8px}
+
+/* ---------- hero ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;border-bottom:2px solid var(--line)}
+.hero-main{padding:44px 28px 36px;border-right:2px solid var(--line)}
+.hero h1{font-family:var(--disp);font-variation-settings:"wdth" 125;font-weight:900;font-size:clamp(40px,6.6vw,96px);line-height:.9;letter-spacing:-.02em;margin:0;text-transform:uppercase}
+.hero h1 .burn{display:block;color:var(--bg);background:var(--heat);width:fit-content;padding:0 .12em;margin-top:.08em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.deck{font-size:19px;line-height:1.5;margin:28px 0 0;max-width:60ch}
+.incident{font-family:var(--mono);font-size:13px;display:flex;flex-direction:column}
+.incident div{padding:12px 16px;border-bottom:2px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+.incident div:last-child{border-bottom:0}
+.incident dt,.incident span:first-child{color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+.incident .hot{background:var(--heat);color:#000;font-weight:700}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:2px solid var(--line)}
+.facts > div{padding:20px 24px 22px;border-right:2px solid var(--line)}
+.facts > div:last-child{border-right:0}
+.facts .lbl{color:var(--dim)}
+.facts b{display:block;font-family:var(--disp);font-variation-settings:"wdth" 112;font-weight:850;font-size:clamp(28px,3vw,40px);line-height:1;margin:10px 0 10px;font-variant-numeric:tabular-nums}
+.facts p{margin:0;font-size:15.5px;line-height:1.45}
+sup a{text-decoration:none;font-family:var(--mono);font-size:11px;padding:0 2px;border:1px solid currentColor;margin-left:3px}
+
+/* ---------- module headers ---------- */
+.mod{display:flex;align-items:stretch;border-bottom:2px solid var(--line);font-family:var(--mono);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.mod > *{padding:10px 18px;border-right:2px solid var(--line);display:flex;align-items:center}
+.mod .no{background:var(--fg);color:var(--bg);font-weight:700}
+.mod .grow{flex:1}
+.mod > *:last-child{border-right:0}
+
+/* ---------- stage ---------- */
+.stage{background:var(--v);color:var(--bone);border-bottom:2px solid var(--line)}
+.stage .mod{border-color:var(--vl2);color:var(--bone)}
+.stage .mod > *{border-color:var(--vl2)}
+.stage .mod .no{background:var(--n-heat);color:#000}
+.chip{color:#000;background:var(--n-lock);padding:2px 8px;font-weight:700}
+.stage-in{display:grid;grid-template-columns:minmax(0,1fr) 390px}
+.mapcol{padding:16px 18px;min-width:0;border-right:2px solid var(--vl2)}
+.bar{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-bottom:14px}
+.clock{font-family:var(--mono);font-weight:700;font-size:22px;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;justify-content:center;line-height:1.1;padding:0 6px}
+.clock small{font-size:11px;font-weight:500;color:var(--ash);letter-spacing:.06em}
+.btn{border:2px solid var(--bone);background:var(--v);color:var(--bone);padding:8px 16px;font-family:var(--mono);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.06em}
+.btn.play{background:var(--n-heat);border-color:var(--n-heat);color:#000;min-width:110px;box-shadow:4px 4px 0 var(--bone)}
+.btn.play:active{transform:translate(4px,4px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.seg{display:inline-flex;border:2px solid var(--vl2)}
+.seg button{border:0;border-right:2px solid var(--vl2);background:transparent;padding:8px 12px;font-family:var(--mono);font-weight:700;font-size:13px;color:var(--ash)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--bone);color:#000}
+.seglbl{font-family:var(--mono);font-size:12px;color:var(--ash);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center}
+.spacer{flex:1}
+.mapbox{position:relative;background:#000;touch-action:pan-y;border:2px solid var(--vl2)}
+.mapbox canvas{display:block;width:100%;height:auto}
+.hud{position:absolute;width:18px;height:18px;border:0 solid var(--bone);pointer-events:none}
+.hud.tl{left:6px;top:6px;border-left-width:2px;border-top-width:2px}
+.hud.tr{right:6px;top:6px;border-right-width:2px;border-top-width:2px}
+.hud.bl{left:6px;bottom:6px;border-left-width:2px;border-bottom-width:2px}
+.hud.br{right:6px;bottom:6px;border-right-width:2px;border-bottom-width:2px}
+.side-lbl{position:absolute;top:14px;padding:4px 9px;font-family:var(--mono);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;pointer-events:none}
+.side-lbl.l{left:30px;background:var(--bone);color:#000}
+.side-lbl.r{right:30px;background:var(--n-lock);color:#000}
+.divider{position:absolute;top:0;bottom:0;width:2px;background:var(--bone);transform:translateX(-1px);pointer-events:none}
+.knob{position:absolute;top:50%;left:50%;width:30px;height:30px;margin:-15px 0 0 -15px;background:var(--bone);display:grid;place-items:center;box-shadow:3px 3px 0 #000}
+.knob svg{width:18px;height:18px}
+.swipe{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:ew-resize;-webkit-appearance:none;appearance:none}
+.coord{position:absolute;font-family:var(--mono);font-size:10px;color:rgba(242,242,234,.45);pointer-events:none;white-space:nowrap}
+.note{position:absolute;pointer-events:none;font-family:var(--mono);font-size:11.5px;line-height:1.3;color:var(--bone);transition:opacity .3s}
+.note .pin{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border:2px solid var(--n-heat)}
+.note .txt{position:absolute;left:14px;top:-11px;white-space:nowrap;background:#000;padding:3px 7px;border:1px solid var(--bone);text-transform:uppercase;letter-spacing:.04em}
+.note.est .txt{border-style:dashed}
+.zl{position:absolute;transform:translate(-50%,-50%);font-family:var(--mono);font-weight:700;font-size:11px;color:rgba(41,227,255,.6);pointer-events:none;white-space:nowrap;letter-spacing:.06em}
+.timeline{margin-top:14px;position:relative}
+.timeline input{width:100%;margin:0;accent-color:var(--n-heat)}
+.ticks{position:relative;height:40px;margin-top:2px;font-family:var(--mono);font-size:11px;color:var(--ash)}
+.tick{position:absolute;top:0;transform:translateX(-50%);text-align:center;line-height:1.2;white-space:nowrap}
+.tick::before{content:"";display:block;width:2px;height:7px;background:var(--vl2);margin:0 auto 3px}
+.tick.first{transform:none;text-align:left}.tick.first::before{margin:0 0 3px}
+.tick.last{transform:translateX(-100%);text-align:right}.tick.last::before{margin:0 0 3px auto}
+.tick.ev{color:#000;background:var(--n-warn);padding:0 4px;font-weight:700}
+.tick.ev::before{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--mono);font-size:12px;color:var(--ash);margin-top:8px;text-transform:uppercase;letter-spacing:.04em}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.lg{width:10px;height:10px;display:inline-block}
+.disclose{font-family:var(--mono);font-size:12px;color:var(--ash);margin:10px 0 0;border-top:1px dashed var(--vl2);padding-top:8px}
+
+.panel{display:flex;flex-direction:column}
+.panel > *{border-bottom:2px solid var(--vl2)}
+.panel > *:last-child{border-bottom:0}
+.p-head{padding:16px 18px}
+.p-head h2{font-family:var(--disp);font-variation-settings:"wdth" 115;font-weight:850;font-size:22px;margin:4px 0 0;line-height:1.1;text-transform:uppercase}
+.p-head .lbl{color:var(--ash)}
+.readout{display:grid;grid-template-columns:1fr 1fr}
+.readout > div{padding:12px 18px 14px}
+.readout > div:first-child{border-right:2px solid var(--vl2)}
+.readout .lbl{color:var(--ash)}
+.readout .lbl.b{color:var(--n-lock)}
+.readout .big{font-family:var(--mono);font-weight:700;font-size:54px;line-height:1;margin-top:6px;font-variant-numeric:tabular-nums}
+.readout .big small{font-size:16px;margin-left:4px;color:var(--ash)}
+.readout .big.bad{color:var(--n-heat)}
+.cmp{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.cmp th{font-weight:500;font-size:11px;color:var(--ash);text-align:right;padding:10px 18px 6px 0;text-transform:uppercase;letter-spacing:.05em}
+.cmp th:first-child{text-align:left;padding-left:18px}
+.cmp th.b{color:var(--n-lock)}
+.cmp td{padding:8px 18px 8px 0;border-top:1px solid var(--vl);text-align:right}
+.cmp td:first-child{text-align:left;color:var(--ash);padding-left:18px;text-transform:uppercase;font-size:11.5px;letter-spacing:.04em}
+.gauge{display:inline-block;width:70px;height:10px;border:1px solid var(--vl2);vertical-align:middle;position:relative}
+.gauge i{position:absolute;left:0;top:0;bottom:0;background:var(--n-signal)}
+.status{padding:10px 18px;font-family:var(--mono);font-size:12.5px;min-height:40px;text-transform:uppercase;letter-spacing:.03em}
+.status.ok{background:var(--n-lock);color:#000}
+.status.bad{background:var(--n-heat);color:#000}
+.chartbox{padding:12px 12px 6px}
+.chart{width:100%;height:auto;display:block}
+.chart text{font-family:var(--mono);font-size:10px;fill:var(--ash)}
+.ticker{padding:12px 18px;font-family:var(--mono);font-size:12.5px}
+.ticker .lbl{color:#000;background:var(--n-warn);display:inline-block;padding:1px 6px;margin-bottom:6px;font-weight:700}
+.ticker .src{color:var(--ash);font-size:11px;margin-top:4px}
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--bone);font-family:var(--mono);font-size:13px;text-transform:uppercase;letter-spacing:.08em;background:rgba(0,0,0,.8)}
+
+/* ---------- sections ---------- */
+.sec{border-bottom:2px solid var(--line)}
+.sec-body{padding:36px 28px 40px}
+.sec h2{font-family:var(--disp);font-variation-settings:"wdth" 125;font-weight:900;font-size:clamp(30px,4vw,56px);line-height:.95;letter-spacing:-.015em;margin:0 0 16px;text-transform:uppercase;max-width:20ch}
+.sec .lead{font-size:18px;margin:0 0 28px;max-width:64ch}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;margin:0;padding:0;border-top:2px solid var(--line)}
+.steps li{padding:18px 20px 22px;border-right:2px solid var(--line)}
+.steps li:last-child{border-right:0}
+.steps .lbl{color:var(--dim)}
+.steps h3{font-family:var(--disp);font-variation-settings:"wdth" 110;font-weight:800;font-size:22px;margin:10px 0 8px;line-height:1.1;text-transform:uppercase}
+.steps p{margin:0;font-size:16px}
+.steps svg{display:block;width:100%;max-width:240px;height:auto;margin:14px 0 6px}
+.impact{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;border-top:2px solid var(--line)}
+.impact th,.impact td{padding:12px 14px 12px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.impact th{font-family:var(--mono);font-size:11.5px;color:var(--dim);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.impact td{font-family:var(--mono);font-size:14px}
+.impact td.n{font-weight:700;font-size:22px;white-space:nowrap}
+.impact tr:first-child td{background:var(--soft)}
+.hbar{height:14px;border:1px solid var(--line);position:relative;min-width:140px}
+.hbar i{position:absolute;left:0;top:0;bottom:0}
+.tscroll{overflow-x:auto}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:2px solid var(--line)}
+.two > div{padding:22px 24px 0 0}
+.two > div + div{padding-left:24px;border-left:2px solid var(--line)}
+.two p{margin:0 0 14px;max-width:62ch}
+.cal{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13.5px;font-variant-numeric:tabular-nums;margin:0 0 14px}
+.cal th,.cal td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);text-align:left}
+.cal th{color:var(--dim);font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+details{border-top:2px solid var(--line);padding:12px 0}
+summary{cursor:pointer;font-family:var(--mono);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.params{font-family:var(--mono);font-size:12.5px;padding-left:0;list-style:none}
+.params li{padding:5px 0;border-bottom:1px dashed var(--soft)}
+ol.src{padding-left:0;list-style:none;counter-reset:src;font-size:15px;margin:0}
+ol.src li{counter-increment:src;padding:10px 0 10px 44px;border-bottom:1px solid var(--line);position:relative}
+ol.src li::before{content:"[" counter(src) "]";position:absolute;left:0;font-family:var(--mono);font-weight:700}
+footer{padding:28px 28px 44px}
+footer .lbl{color:var(--dim)}
+footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-weight:800;font-size:clamp(20px,2.4vw,30px);line-height:1.15;margin:12px 0 18px;max-width:46ch}
+
+@media (max-width: 1100px){
+  .stage-in{grid-template-columns:1fr}
+  .mapcol{border-right:0;border-bottom:2px solid var(--vl2)}
+  .hero{grid-template-columns:1fr}
+  .hero-main{border-right:0;border-bottom:2px solid var(--line)}
+}
+@media (max-width: 760px){
+  body{font-size:16px}
+  .top{grid-template-columns:auto 1fr}
+  .top a,.top .off{display:none}
+  .facts,.steps,.two{grid-template-columns:1fr}
+  .facts > div,.steps li{border-right:0;border-bottom:2px solid var(--line)}
+  .facts > div:last-child,.steps li:last-child{border-bottom:0}
+  .two > div + div{padding-left:0;border-left:0;border-top:2px solid var(--line);margin-top:10px}
+  .hero-main,.sec-body{padding-left:16px;padding-right:16px}
+  .mapcol{padding:12px 10px}
+  .zl,.coord,.note.est .txt,.side-lbl .long,.mod .hide-s{display:none}
+  .side-lbl{top:10px}.side-lbl.l{left:10px}.side-lbl.r{right:10px}
+  .note .txt{top:12px;left:-40px}
+  .ticks .tick:nth-child(2),.ticks .tick:nth-child(5),.tick.ev{font-size:0}
+  .tick.ev{width:8px;height:8px;padding:0}
+  .readout .big{font-size:42px}
+  .impact td:nth-child(3),.impact td:nth-child(5),.impact th:nth-child(3),.impact th:nth-child(5){display:none}
+}
+@media (prefers-reduced-motion: reduce){ .note{transition:none} }
+</style>
+</head>
+<body>
+<div class="frame">
+<header class="top">
+  <div class="id">FN/01</div>
+  <div class="name">Friendly Neighborhood</div>
+  <a href="#replay">Replay</a>
+  <a href="#how">Mechanism</a>
+  <a href="#method">Model</a>
+  <div class="off" title="The utility dashboard is being built">Dashboard offline</div>
+</header>
+
+<main>
+<div class="hero">
+  <div class="hero-main">
+    <h1>Burned homes kept drawing water.<span class="burn">The hydrants ran dry.</span></h1>
+    <p class="deck">On the first night of the Palisades Fire, thousands of destroyed houses left their water lines open while firefighters needed every gallon. Replay those 24 hours on real data, then see what changes when each open line shuts itself off.</p>
+  </div>
+  <dl class="incident" style="margin:0">
+    <div class="hot"><span>Case</span><span>Palisades Fire</span></div>
+    <div><span>Incident</span><span>CA-LFD-000738</span></div>
+    <div><span>Ignition</span><span>2025-01-07 10:30</span></div>
+    <div><span>Area</span><span>23,448 ac</span></div>
+    <div><span>Structures destroyed</span><span>6,837</span></div>
+    <div><span>Mapped here</span><span id="mappedN">9,650 pts</span></div>
+  </dl>
+</div>
+<div class="facts">
+  <div><span class="lbl">Hydrants</span><b>~200 / 1,000</b><p>Palisades hydrants lost water, mostly at higher elevations.<sup><a href="#s1">1</a></sup></p></div>
+  <div><span class="lbl">Tanks</span><b>16:45 → 03:00</b><p>All three hillside water tanks ran dry, one after another.<sup><a href="#s2">2</a></sup></p></div>
+  <div><span class="lbl">Open lines</span><b>~4,800</b><p>Leaking connections at burned properties that LADWP crews shut off by hand, two days later.<sup><a href="#s3">3</a></sup></p></div>
+</div>
+
+<section class="stage" id="replay" aria-label="Interactive replay of the first 24 hours">
+  <div class="mod"><div class="no">02</div><div class="grow">Replay / first 24 hours / Pacific Palisades</div><div class="hide-s">Model <span class="chip" style="margin-left:8px">Calibrated</span></div></div>
+  <div class="stage-in">
+    <div class="mapcol">
+      <div class="bar">
+        <button class="btn play" id="play" disabled>Play</button>
+        <div class="clock"><small id="tplus">T+00:00</small><span id="clock">2025-01-07 10:30</span></div>
+        <div class="seg" role="group" aria-label="Playback speed">
+          <button data-sp="1" aria-pressed="true">1×</button><button data-sp="3" aria-pressed="false">3×</button>
+        </div>
+        <span class="spacer"></span>
+        <span class="seglbl" id="adoptLbl">Homes with a valve</span>
+        <div class="seg" role="group" aria-labelledby="adoptLbl">
+          <button data-ad="0.25" aria-pressed="false">25%</button><button data-ad="0.5" aria-pressed="false">50%</button><button data-ad="1" aria-pressed="true">100%</button>
+        </div>
+      </div>
+      <div class="mapbox" id="mapbox">
+        <canvas id="map" role="img" aria-label="Map of Pacific Palisades. Each dot is a structure from CAL FIRE's damage inspection. The left side shows what happened; the right side shows the same fire with shut-off valves."></canvas>
+        <div id="overlay"></div>
+        <i class="hud tl"></i><i class="hud tr"></i><i class="hud bl"></i><i class="hud br"></i>
+        <div class="side-lbl l">What happened</div>
+        <div class="side-lbl r" id="rLbl">With valves<span class="long"> in</span> 100%<span class="long"> of homes</span></div>
+        <div class="divider" id="divider"><div class="knob"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6 3 12l6 6M15 6l6 6-6 6" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="square"/></svg></div></div>
+        <input type="range" class="swipe" id="swipe" min="0" max="1000" value="500" aria-label="Compare: drag to move the divider between what happened and the same fire with valves">
+        <div class="loading" id="loading">Running water model_</div>
+      </div>
+      <div class="timeline">
+        <input type="range" id="scrub" min="0" max="288" value="0" step="1" aria-label="Time since the fire started">
+        <div class="ticks" id="ticks"></div>
+      </div>
+      <div class="legend">
+        <span><i class="lg" style="background:#3A3A36"></i>Standing</span>
+        <span><i class="lg" style="background:var(--n-heat);box-shadow:0 0 8px var(--n-heat)"></i>Burning</span>
+        <span><i class="lg" style="background:#1A1A18;outline:2px solid var(--n-signal)"></i>Destroyed, line leaking</span>
+        <span><i class="lg" style="background:#1A1A18;outline:2px solid var(--n-lock)"></i>Destroyed, valve closed</span>
+        <span><i class="lg" style="background:var(--n-signal);transform:rotate(45deg) scale(.75)"></i>Hydrant ≥ 20 psi</span>
+        <span><i class="lg" style="outline:2px solid var(--n-heat);transform:rotate(45deg) scale(.75)"></i>Hydrant &lt; 20 psi</span>
+      </div>
+      <p class="disclose">Source: structure locations and damage, CAL FIRE. Estimated by our model: burn times, leaks, pressures. Cyan shading marks pressure zones in served areas.</p>
+    </div>
+
+    <aside class="panel" aria-label="Side by side readings">
+      <div class="p-head">
+        <span class="lbl" id="repSub">Marquez Knolls zone / 958 ft / estimated</span>
+        <h2 id="repName">Hydrant, Lachman Ln</h2>
+      </div>
+      <div class="readout">
+        <div><span class="lbl">What happened</span><div class="big" id="psiA">–</div></div>
+        <div><span class="lbl b" id="colB">With valves</span><div class="big" id="psiB">–</div></div>
+      </div>
+      <table class="cmp">
+        <thead><tr><th>Metric</th><th>Actual</th><th class="b">Valves</th></tr></thead>
+        <tbody>
+          <tr><td>Open water lines</td><td id="openA">0</td><td id="openB">0</td></tr>
+          <tr><td>Lost to leaks</td><td id="lostA">0</td><td id="lostB">0</td></tr>
+          <tr><td>Hydrants &lt; 20 psi</td><td id="lowA">0</td><td id="lowB">0</td></tr>
+          <tr><td>Marquez Knolls tank</td><td><span class="gauge"><i id="t2A"></i></span></td><td><span class="gauge"><i id="t2B"></i></span></td></tr>
+          <tr><td>Trailer tank</td><td><span class="gauge"><i id="t3A"></i></span></td><td><span class="gauge"><i id="t3B"></i></span></td></tr>
+          <tr><td>Temescal tank</td><td><span class="gauge"><i id="t4A"></i></span></td><td><span class="gauge"><i id="t4B"></i></span></td></tr>
+        </tbody>
+      </table>
+      <div class="status" id="status" aria-live="polite">Standing by</div>
+      <div class="chartbox"><svg class="chart" id="chart" viewBox="0 0 336 170" aria-label="Pressure at the highlighted hydrant over 24 hours, both scenarios"></svg></div>
+      <div class="ticker" id="ticker"><span class="lbl">Reported</span><div id="tickTxt">Press Play to replay the first 24 hours.</div><div class="src" id="tickSrc"></div></div>
+    </aside>
+  </div>
+</section>
+
+<section class="sec" id="how">
+  <div class="mod"><div class="no">03</div><div class="grow">Mechanism</div></div>
+  <div class="sec-body">
+    <h2>A valve that closes when the house is gone</h2>
+    <p class="lead">Firefighters can't shut off thousands of water lines in the middle of a firestorm. The house has to do it for them.</p>
+    <ol class="steps">
+      <li>
+        <span class="lbl">Step 1 / Sense</span>
+        <svg viewBox="0 0 240 120" aria-hidden="true"><path d="M70 104V60l50-34 50 34v44z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter"/><rect x="50" y="36" width="140" height="76" fill="none" stroke="var(--signal)" stroke-width="3" stroke-dasharray="8 6"/><path d="M4 112h46" stroke="var(--signal)" stroke-width="5"/><rect x="42" y="104" width="16" height="16" fill="var(--lock)"/></svg>
+        <h3>A sensing loop circles the house</h3>
+        <p>A thin loop of pipe branches off the water service and runs around the house, with temperature sensors along it.</p>
+      </li>
+      <li>
+        <span class="lbl">Step 2 / Shut</span>
+        <svg viewBox="0 0 240 120" aria-hidden="true"><path d="M70 104V60l50-34 50 34v44z" fill="none" stroke="var(--heat)" stroke-width="3"/><path d="M50 60v52h62M190 50v62h-56" fill="none" stroke="var(--signal)" stroke-width="3" stroke-dasharray="8 6"/><path d="M114 102l12 12m0-12-12 12" stroke="var(--heat)" stroke-width="4"/><path d="M4 112h36" stroke="var(--signal)" stroke-width="5"/><rect x="38" y="102" width="20" height="20" fill="var(--lock)"/><path d="M42 112h12" stroke="#000" stroke-width="3"/></svg>
+        <h3>Fire breaks the loop, the valve shuts</h3>
+        <p>When heat or a collapse breaks the loop, the valve on the main service line closes and the house stops drawing water from the street.</p>
+      </li>
+      <li>
+        <span class="lbl">Step 3 / Report</span>
+        <svg viewBox="0 0 240 120" aria-hidden="true"><rect x="20" y="20" width="130" height="84" fill="none" stroke="currentColor" stroke-width="3"/><path d="M20 40h130" stroke="currentColor" stroke-width="2"/><rect x="40" y="54" width="10" height="10" fill="var(--lock)"/><rect x="66" y="72" width="10" height="10" fill="var(--lock)"/><rect x="92" y="52" width="10" height="10" fill="var(--signal)"/><rect x="118" y="80" width="10" height="10" fill="var(--lock)"/><path d="M178 62h44M200 40v44" stroke="var(--lock)" stroke-width="6"/></svg>
+        <h3>The utility sees it, the owner resets it</h3>
+        <p>Sensors report which homes have shut off, so the utility knows where water is being lost. After the fire, a quick-reset kit reopens the line.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec" id="impact">
+  <div class="mod"><div class="no">04</div><div class="grow">Adoption vs. outcome</div></div>
+  <div class="sec-body">
+    <h2>More valves, and the hydrants come back</h2>
+    <p class="lead">The same 24 hours, run again with a different share of homes fitted with a valve. In the model, firefighting alone empties the first two tanks either way. What the valves change is the long night after: with the leaks gone, the pumps catch up and hydrants get their pressure back. Numbers cover the mapped area.</p>
+    <div class="tscroll">
+    <table class="impact" id="impactTable">
+      <thead><tr><th>Homes with a valve</th><th>Hydrants &lt; 20 psi next morning</th><th></th><th>Lost to leaks, 24 h</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="method">
+  <div class="mod"><div class="no">05</div><div class="grow">Model / data / limits</div></div>
+  <div class="sec-body">
+    <h2>How we built this</h2>
+    <div class="two">
+      <div>
+        <p>Every dot on the map is a real structure from CAL FIRE's post-fire damage inspection, and every hydrant is a real LADWP or LA County hydrant. We estimated when the fire reached each structure by georeferencing CAL FIRE's progression map, and assigned each point a pressure zone from its ground elevation.</p>
+        <p>The water model is small on purpose. Destroyed homes leak in proportion to the square root of local pressure. Firefighting draws water where the fire is. Pumps lift water to three hillside tanks and slow down as their intake pressure falls. We tuned it once so the "What happened" run matches the public record, then ran the valve scenarios with the same settings.</p>
+        <p>It is a model, not a reconstruction. The biggest unknown is how much water one destroyed house leaks; no public figure exists, so it is a calibrated assumption.</p>
+      </div>
+      <div>
+        <table class="cal" id="calTable">
+          <thead><tr><th>Check against the record</th><th>Reported</th><th>Model</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <details><summary>Model settings</summary><ul class="params" id="params"></ul></details>
+        <details><summary>What the model leaves out</summary>
+          <p style="margin-top:10px">Pipe-by-pipe hydraulics (LADWP pipe data is not public), exact pressure-zone boundaries, pressure-reducing valves, residents' sprinklers and hoses, water tenders, and the crews' manual shut-offs. The map covers the Pacific Palisades core, Marquez Knolls and Palisades Highlands, not the whole fire.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="mod"><div class="no">06</div><div class="grow">Sources</div></div>
+  <div class="sec-body">
+    <ol class="src">
+      <li id="s1">Mayor Karen Bass and LADWP, Jan 8, 2025, as reported in <a href="https://www.yahoo.com/news/fact-check-yes-la-fire-223100748.html">this fact check</a>; LADWP statement via <a href="https://www.foxla.com/news/palisades-fire-dwp-sued-water-availability">FOX 11</a>.</li>
+      <li id="s2">Tank times from LADWP, reported by <a href="https://abc7.com/post/los-angeles-wildfires-ladwp-says-never-ran-water-pacific-palisades-during-fire-did-hydrants-run-dry/16349652/">ABC7</a>. Tank capacities from the <a href="https://ladwpnews.com/ladwp-palisades-fire-water-system-preliminary-report-july-3-2025/">LADWP Palisades Fire Water System Preliminary Report</a> (Jul 3, 2025).</li>
+      <li id="s3">About 4,800 leaking access points shut off: LADWP preliminary report (above). Crews could not return for two days: ABC7 (above).</li>
+      <li id="s4">How burned homes drain the system, the 37,000 gpm trunk limit and the 6:30 PM low-pressure reports: <a href="https://resources.ca.gov/-/media/CNRA-Website/Files/NewsRoom/Educational-Portal/19Nov2025PalisadesFireWaterSupply.pdf">California Natural Resources Agency memo</a> (Nov 2025).</li>
+      <li id="s5">Structures and damage: <a href="https://gis.data.ca.gov/datasets/CALFIRE-Forestry::dins-2025-palisades-public-view">CAL FIRE DINS, 2025 Palisades</a>. Fire progression: CAL FIRE Incident Management Team 2 progression map, with the band-date correction noted by <a href="https://the-lookout.org/?p=6082">The Lookout</a>.</li>
+      <li id="s6">Hydrants: <a href="https://geohub.lacity.org/datasets/fire-hydrants-dwp">LADWP Fire Hydrants (LA GeoHub)</a> and LA County Fire hydrants. Terrain: USGS 3DEP 1/3 arc-second elevation.</li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer>
+  <span class="lbl">USC Origin Weekend / Fall 2026 / Prompt D</span>
+  <div class="prompt">How can we detect infrastructure damage and failures before they become expensive, and rapidly prioritize recovery when they occur?</div>
+  <span class="lbl">Team Friendly Neighborhood / utility dashboard in progress</span>
+</footer>
+</div>
+
+<script>
+/*__SIM__*/
+</script>
+<script>
+const DATA = /*__DATA__*/null;
+(function () {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const dec = (s, T) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new T(u.buffer); };
+  const W = DATA.window.width, H = DATA.window.height, Z = DATA.zones.length;
+  const houses = { n: DATA.houses.n, x: dec(DATA.houses.x, Uint16Array), y: dec(DATA.houses.y, Uint16Array), elev: dec(DATA.houses.elev, Uint16Array), zone: dec(DATA.houses.zone, Uint8Array), dmg: dec(DATA.houses.dmg, Uint8Array), arr: dec(DATA.houses.arr, Uint16Array) };
+  const hyd = { n: DATA.hydrants.n, x: dec(DATA.hydrants.x, Uint16Array), y: dec(DATA.hydrants.y, Uint16Array), elev: dec(DATA.hydrants.elev, Uint16Array), zone: dec(DATA.hydrants.zone, Uint8Array) };
+  const P = FNSim.PARAMS, STEPS = P.steps, DT = P.dtMin, REP = DATA.rep.index;
+  const prep = FNSim.prepare({ zones: DATA.zones, houses });
+  const LEVELS = [0, 0.25, 0.5, 0.75, 1];
+  const runs = {};
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- time helpers ----------
+  const clockOf = f => { const m = 630 + f * DT, d = m >= 1440 ? 8 : 7, mm = m % 1440, h = Math.floor(mm / 60), mi = mm % 60; return `2025-01-0${d} ${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}`; };
+  const shortClock = m => { const mm = (630 + m) % 1440, h = Math.floor(mm / 60), mi = mm % 60; return `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}`; };
+  const fmtGal = g => g >= 1e6 ? (g / 1e6).toFixed(1) + "M gal" : g >= 1e3 ? Math.round(g / 1e3) + "k gal" : Math.round(g) + " gal";
+  const headAt = (r, f, z) => f === 0 ? DATA.zones[z] : r.head[(f - 1) * Z + z];
+  const psi = (r, f, z, elev) => Math.max(0, FNSim.PSI_PER_FT * (headAt(r, f, z) - elev));
+  const tankAt = (r, f, z) => f === 0 ? 1 : r.tank[(f - 1) * Z + z];
+
+  // ---------- real events (reported) ----------
+  const EVENTS = [
+    { m: 0, txt: "10:30. Fire starts east of the Palisades Highlands.", src: "LADWP; CAL FIRE" },
+    { m: 375, txt: "16:45. Marquez Knolls tank runs dry.", src: "LADWP via ABC7" },
+    { m: 480, txt: "About 18:30. Firefighters first radio in low hydrant pressure.", src: "California Natural Resources Agency memo" },
+    { m: 600, txt: "20:30. Trailer tank in Palisades Highlands runs dry.", src: "LADWP via ABC7" },
+    { m: 990, txt: "03:00 (Jan 8). Temescal tank is empty.", src: "LADWP via ABC7" },
+  ];
+
+  // ---------- canvas setup ----------
+  const canvas = $("map"), ctx = canvas.getContext("2d");
+  const base = new Image(); base.src = DATA.basemap;
+  const zimg = new Image(); zimg.src = DATA.zonemap;
+  let scale = 1, zoneMasks = null;
+
+  function sprite(r, draw) { const c = document.createElement("canvas"); c.width = c.height = Math.ceil(r * 2); draw(c.getContext("2d"), r); return c; }
+  let SP = {};
+  function buildSprites() {
+    const s = Math.max(1, scale);
+    const sq = (col, half) => sprite(half * s + 1, (g, r) => { g.fillStyle = col; const a = half * s; g.fillRect(r - a, r - a, 2 * a, 2 * a); });
+    const box = (col, half, w) => sprite((half + w) * s + 1, (g, r) => { g.strokeStyle = col; g.lineWidth = w * s; const a = half * s; g.strokeRect(r - a, r - a, 2 * a, 2 * a); });
+    const glow = sprite(10 * s, (g, r) => { const gr = g.createRadialGradient(r, r, 0, r, r, r); gr.addColorStop(0, "rgba(255,120,40,.95)"); gr.addColorStop(.3, "rgba(255,74,28,.6)"); gr.addColorStop(1, "rgba(255,74,28,0)"); g.fillStyle = gr; g.fillRect(0, 0, 2 * r, 2 * r); });
+    SP = { stand: sq("#3A3A36", 1.4), burn: sq("#FFE08A", 1.6), gone: sq("#1A1A18", 1.7), scorch: sq("#6A4A30", 1.5),
+      leak: box("rgba(41,227,255,.95)", 3.0, 1.1), leakDry: box("rgba(41,227,255,.22)", 3.0, 1), valve: box("#C6FF3D", 2.8, 1.3), glow };
+    const dia = (fill, stroke, size) => sprite(5 * s + 1, (g, r) => { g.translate(r, r); g.rotate(Math.PI / 4); const a = size * s; if (fill) { g.fillStyle = fill; g.fillRect(-a, -a, 2 * a, 2 * a); } g.strokeStyle = stroke; g.lineWidth = 1.3 * s; g.strokeRect(-a, -a, 2 * a, 2 * a); });
+    SP.hOk = dia("rgba(41,227,255,.75)", "rgba(0,0,0,.9)", 2.2); SP.hMid = dia("#FFC21A", "#000", 2.7); SP.hLow = dia(null, "#FF4A1C", 3.2);
+  }
+  function buildZoneMasks() {
+    const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d");
+    g.drawImage(zimg, 0, 0); const src = g.getImageData(0, 0, W, H).data;
+    const make = (z, rgb) => { const m = document.createElement("canvas"); m.width = W; m.height = H; const mg = m.getContext("2d"), id = mg.createImageData(W, H), d = id.data;
+      for (let p = 0, q = 0; p < src.length; p += 4, q += 4) if (src[p] === z + 1) { d[q] = rgb[0]; d[q + 1] = rgb[1]; d[q + 2] = rgb[2]; d[q + 3] = 255; }
+      mg.putImageData(id, 0, 0); return m; };
+    const shades = [[0, 120, 140], [0, 140, 165], [0, 165, 190], [20, 190, 215], [41, 227, 255]];
+    zoneMasks = DATA.zones.map((_, z) => ({ wet: make(z, shades[z]), dry: make(z, [110, 60, 40]) }));
+  }
+  function resize() {
+    const cssW = $("mapbox").clientWidth, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssW * dpr * H / W);
+    scale = canvas.width / W; buildSprites(); placeOverlay(); draw();
+  }
+
+  // ---------- state ----------
+  let frame = 0, playing = false, speed = 1, adoption = 1, split = 0.5, timer = null, ready = false, tPulse = 0;
+  const A = () => runs[0], B = () => runs[adoption];
+
+  // ---------- drawing ----------
+  function drawScene(r, withValves, f, x0, x1) {
+    const t = f * DT;
+    ctx.save(); ctx.beginPath(); ctx.rect(x0, 0, x1 - x0, canvas.height); ctx.clip();
+    ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
+    if (zoneMasks) {
+      for (let z = 0; z < Z; z++) {
+        const p = psi(r, f, z, prep.typElev[z]), w = Math.max(0, Math.min(1, p / 50));
+        ctx.globalAlpha = 0.17 * w; ctx.drawImage(zoneMasks[z].wet, 0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 0.22 * (1 - w); ctx.drawImage(zoneMasks[z].dry, 0, 0, canvas.width, canvas.height);
+      }
+      ctx.globalAlpha = 1;
+    }
+    const s = scale / 4, n = houses.n, X = houses.x, Y = houses.y, ARR = houses.arr, DMG = houses.dmg, ZN = houses.zone, EL = houses.elev;
+    const pulse = reduced ? 1 : 0.55 + 0.45 * Math.sin(tPulse);
+    const burning = [];
+    for (let i = 0; i < n; i++) {
+      const px = X[i] * s, py = Y[i] * s;
+      if (px < x0 - 6 || px > x1 + 6) continue;
+      const a = ARR[i]; let sp = SP.stand, ring = null;
+      if (a !== 65535 && a <= t) {
+        const d = DMG[i];
+        if (d >= 1 && t - a < 60) { burning.push(i); continue; }
+        if (d === 4) {
+          sp = SP.gone;
+          if (t >= a + P.openDelayMin) {
+            if (withValves && FNSim.hash01(i) < adoption) ring = SP.valve;
+            else ring = psi(r, f, ZN[i], EL[i]) > 1 ? SP.leak : SP.leakDry;
+          }
+        } else if (d >= 1) sp = SP.scorch;
+      }
+      ctx.drawImage(sp, px - sp.width / 2, py - sp.height / 2);
+      if (ring) { if (ring === SP.leak) ctx.globalAlpha = pulse; ctx.drawImage(ring, px - ring.width / 2, py - ring.height / 2); ctx.globalAlpha = 1; }
+    }
+    ctx.globalCompositeOperation = "lighter";
+    for (const i of burning) { const px = X[i] * s, py = Y[i] * s; ctx.drawImage(SP.glow, px - SP.glow.width / 2, py - SP.glow.height / 2); }
+    ctx.globalCompositeOperation = "source-over";
+    for (const i of burning) { const px = X[i] * s, py = Y[i] * s; ctx.drawImage(SP.burn, px - SP.burn.width / 2, py - SP.burn.height / 2); }
+    for (let j = 0; j < hyd.n; j++) {
+      const px = hyd.x[j] * s, py = hyd.y[j] * s;
+      if (px < x0 - 6 || px > x1 + 6) continue;
+      const p = psi(r, f, hyd.zone[j], hyd.elev[j]), sp = p >= 35 ? SP.hOk : p >= 20 ? SP.hMid : SP.hLow;
+      ctx.drawImage(sp, px - sp.width / 2, py - sp.height / 2);
+    }
+    // graticule every 0.01 degree
+    ctx.strokeStyle = "rgba(242,242,234,.08)"; ctx.lineWidth = 1;
+    const win = DATA.window;
+    for (let lo = Math.ceil(win.lon0 * 100) / 100; lo < win.lon1; lo += 0.01) { const gx = (lo - win.lon0) / (win.lon1 - win.lon0) * canvas.width; ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, canvas.height); ctx.stroke(); }
+    for (let la = Math.ceil(win.lat0 * 100) / 100; la < win.lat1; la += 0.01) { const gy = (win.lat1 - la) / (win.lat1 - win.lat0) * canvas.height; ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(canvas.width, gy); ctx.stroke(); }
+    const rx = hyd.x[REP] * s, ry = hyd.y[REP] * s, m = Math.max(1, scale), q = 10 * m, e = 4 * m;
+    ctx.strokeStyle = "#F2F2EA"; ctx.lineWidth = 2 * m; ctx.beginPath();
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([dx, dy]) => { ctx.moveTo(rx + dx * q, ry + dy * (q - e)); ctx.lineTo(rx + dx * q, ry + dy * q); ctx.lineTo(rx + dx * (q - e), ry + dy * q); });
+    ctx.stroke();
+    ctx.restore();
+  }
+  function draw() {
+    if (!ready || !base.complete) return;
+    const xs = Math.round(canvas.width * split);
+    drawScene(A(), false, frame, 0, xs);
+    drawScene(B(), true, frame, xs, canvas.width);
+    $("divider").style.left = (split * 100) + "%";
+  }
+
+  // ---------- overlay (DOM notes, crisp text) ----------
+  function placeOverlay() {
+    const o = $("overlay"); o.innerHTML = "";
+    const pct = (x, y) => `left:${(x / W * 100).toFixed(2)}%;top:${(y / H * 100).toFixed(2)}%`;
+    DATA.zoneLabels.forEach((pt, z) => { if (!pt) return; const e = document.createElement("div"); e.className = "zl"; e.style.cssText = pct(pt[0], pt[1]); e.textContent = "ZONE " + DATA.zones[z]; o.appendChild(e); });
+    const win = DATA.window;
+    for (let lo = Math.ceil(win.lon0 * 100) / 100 + 0.01; lo < win.lon1 - 0.004; lo += 0.01) { const e = document.createElement("div"); e.className = "coord"; e.style.cssText = `left:${((lo - win.lon0) / (win.lon1 - win.lon0) * 100).toFixed(2)}%;bottom:4px;transform:translateX(3px)`; e.textContent = lo.toFixed(2); o.appendChild(e); }
+    for (let la = Math.ceil(win.lat0 * 100) / 100; la < win.lat1 - 0.004; la += 0.01) { const e = document.createElement("div"); e.className = "coord"; e.style.cssText = `top:${((win.lat1 - la) / (win.lat1 - win.lat0) * 100).toFixed(2)}%;left:4px;transform:translateY(-120%)`; e.textContent = la.toFixed(2) + "N"; o.appendChild(e); }
+    const ig = document.createElement("div"); ig.className = "note"; ig.id = "igNote"; ig.style.cssText = pct(DATA.ignition[0], DATA.ignition[1]);
+    ig.innerHTML = '<span class="pin"></span><span class="txt">Ignition 10:30</span>'; o.appendChild(ig);
+    const rp = document.createElement("div"); rp.className = "note est"; rp.style.cssText = pct(hyd.x[REP] / 4, hyd.y[REP] / 4);
+    rp.innerHTML = `<span class="txt" style="left:16px;top:8px">${DATA.rep.label} / est.</span>`; o.appendChild(rp);
+  }
+
+  // ---------- panel ----------
+  const lowCount = (r, f) => { let c = 0; for (let j = 0; j < hyd.n; j++) if (psi(r, f, hyd.zone[j], hyd.elev[j]) < P.usablePsi) c++; return c; };
+  function updatePanel() {
+    const a = A(), b = B(), f = frame, k = f - 1;
+    const pa = psi(a, f, hyd.zone[REP], hyd.elev[REP]), pb = psi(b, f, hyd.zone[REP], hyd.elev[REP]);
+    const put = (id, v, low) => { const e = $(id); e.innerHTML = String(Math.round(v)).padStart(2, "0") + "<small>psi</small>"; e.classList.toggle("bad", low); };
+    put("psiA", pa, pa < 20); put("psiB", pb, pb < 20);
+    $("openA").textContent = k >= 0 ? a.open[k].toLocaleString("en-US") : 0;
+    $("openB").textContent = k >= 0 ? b.open[k].toLocaleString("en-US") : 0;
+    $("lostA").textContent = fmtGal(k >= 0 ? a.lostGal[k] : 0);
+    $("lostB").textContent = fmtGal(k >= 0 ? b.lostGal[k] : 0);
+    $("lowA").textContent = lowCount(a, f) + " of " + hyd.n;
+    $("lowB").textContent = lowCount(b, f) + " of " + hyd.n;
+    [2, 3, 4].forEach(z => { $("t" + z + "A").style.width = (100 * tankAt(a, f, z)) + "%"; $("t" + z + "B").style.width = (100 * tankAt(b, f, z)) + "%"; });
+    $("clock").textContent = clockOf(f);
+    $("tplus").textContent = "T+" + String(Math.floor(f * DT / 60)).padStart(2, "0") + ":" + String(f * DT % 60).padStart(2, "0");
+    $("scrub").value = f;
+    const st = $("status"); st.className = "status";
+    if (f === 0) st.textContent = "Standing by";
+    else if (pa < 20 && pb >= 20) { st.textContent = "Valves keep this hydrant usable. Without them it is below 20 psi."; st.classList.add("ok"); }
+    else if (pa < 20 && pb < 20) { st.textContent = "Below the 20 psi engines need, in both runs."; st.classList.add("bad"); }
+    else if (pb < 20) st.textContent = "Briefly below 20 psi with valves too: firefighting alone strains this zone.";
+    else st.textContent = "Both runs have usable pressure here.";
+    const ev = [...EVENTS].reverse().find(e => e.m <= f * DT);
+    $("tickTxt").textContent = f === 0 ? "Press Play to replay the first 24 hours." : ev.txt;
+    $("tickSrc").textContent = f === 0 ? "" : "Source: " + ev.src;
+    $("igNote").style.opacity = f * DT < 240 ? 1 : 0;
+    drawChart();
+  }
+  function drawChart() {
+    const c = $("chart"), a = A(), b = B(), NS = "http://www.w3.org/2000/svg";
+    const L = 30, R = 330, T = 10, Bm = 132, maxP = 100;
+    const X = f => L + (R - L) * f / STEPS, Y = p => Bm - (Bm - T) * Math.min(p, maxP) / maxP;
+    let s = "";
+    [0, 20, 50, 100].forEach(p => { s += `<line x1="${L}" x2="${R}" y1="${Y(p)}" y2="${Y(p)}" stroke="${p === 20 ? "#FF4A1C" : "#2E2E2B"}" stroke-dasharray="${p === 20 ? "4 3" : ""}"/><text x="${L - 5}" y="${Y(p) + 4}" text-anchor="end">${p}</text>`; });
+    s += `<text x="${R}" y="${Y(20) + 11}" text-anchor="end" style="fill:#FF4A1C">20 PSI ENGINE MINIMUM</text>`;
+    [[0, "10:30"], [96, "18:30"], [192, "02:30"], [288, "10:30"]].forEach(([f, l], i) => { s += `<text x="${X(f)}" y="150" text-anchor="${i === 0 ? "start" : i === 3 ? "end" : "middle"}">${l}</text>`; });
+    EVENTS.slice(1).forEach(e => { s += `<line x1="${X(e.m / DT)}" x2="${X(e.m / DT)}" y1="${T}" y2="${Bm}" stroke="#FFC21A" stroke-opacity=".4" stroke-dasharray="2 3"/>`; });
+    const path = (r, upto) => { let d = ""; for (let f = 0; f <= upto; f++) d += (f ? "L" : "M") + X(f).toFixed(1) + " " + Y(psi(r, f, hyd.zone[REP], hyd.elev[REP])).toFixed(1); return d; };
+    const upto = Math.max(frame, 0);
+    s += `<path d="${path(b, STEPS)}" fill="none" stroke="#C6FF3D" stroke-opacity=".25" stroke-width="1.5"/>`;
+    s += `<path d="${path(a, STEPS)}" fill="none" stroke="#FF4A1C" stroke-opacity=".25" stroke-width="1.5"/>`;
+    s += `<path d="${path(b, upto)}" fill="none" stroke="#C6FF3D" stroke-width="2.4" stroke-linejoin="round"/>`;
+    s += `<path d="${path(a, upto)}" fill="none" stroke="#FF4A1C" stroke-width="2.4" stroke-linejoin="round"/>`;
+    s += `<line x1="${X(upto)}" x2="${X(upto)}" y1="${T}" y2="${Bm}" stroke="#F2F2EA" stroke-opacity=".6"/>`;
+    s += `<text x="${L}" y="166" style="fill:#FF4A1C">■ ACTUAL</text><text x="${L + 70}" y="166" style="fill:#C6FF3D">■ VALVES</text><text x="${R}" y="166" text-anchor="end">PSI AT THIS HYDRANT</text>`;
+    c.innerHTML = s;
+  }
+
+  // ---------- timeline ticks ----------
+  function buildTicks() {
+    const t = $("ticks"); let s = "";
+    [[0, "10:30"], [270, "15:00"], [570, "20:00"], [870, "01:00"], [1170, "06:00"], [1440, "10:30"]].forEach(([m, l], i, arr) => { s += `<div class="tick${i === 0 ? " first" : i === arr.length - 1 ? " last" : ""}" style="left:${m / 1440 * 100}%">${l}</div>`; });
+    EVENTS.slice(1).forEach(e => { s += `<div class="tick ev" style="left:${e.m / 1440 * 100}%;top:18px" title="${e.txt}">${shortClock(e.m)}</div>`; });
+    t.innerHTML = s;
+  }
+
+  // ---------- controls ----------
+  function tick() {
+    frame = Math.min(STEPS, frame + 1);
+    render();
+    if (frame >= STEPS) stop(true);
+  }
+  function render() { draw(); updatePanel(); }
+  function start() { if (frame >= STEPS) frame = 0; playing = true; $("play").textContent = "Pause"; schedule(); }
+  function stop(done) { playing = false; clearInterval(timer); timer = null; $("play").textContent = done ? "Replay" : "Play"; }
+  function schedule() { clearInterval(timer); timer = setInterval(tick, 110 / speed); }
+  $("play").onclick = () => playing ? stop() : start();
+  $("scrub").oninput = e => { frame = +e.target.value; render(); };
+  document.querySelectorAll("[data-sp]").forEach(b => b.onclick = () => { speed = +b.dataset.sp; document.querySelectorAll("[data-sp]").forEach(x => x.setAttribute("aria-pressed", x === b)); if (playing) schedule(); });
+  document.querySelectorAll("[data-ad]").forEach(b => b.onclick = () => {
+    adoption = +b.dataset.ad; document.querySelectorAll("[data-ad]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    $("rLbl").innerHTML = `With valves<span class="long"> in</span> ${Math.round(adoption * 100)}%<span class="long"> of homes</span>`; $("colB").textContent = `With valves / ${Math.round(adoption * 100)}%`; render();
+  });
+  $("swipe").oninput = e => { split = e.target.value / 1000; draw(); };
+  window.addEventListener("resize", () => { clearTimeout(resize.t); resize.t = setTimeout(resize, 120); });
+  (function anim() { if (!reduced && ready) { tPulse += 0.18; if (!playing && frame > 0) draw(); } requestAnimationFrame(anim); })();
+
+  // ---------- static sections from the model ----------
+  function fillImpact() {
+    const rows = LEVELS.map(l => ({ l, low: lowCount(runs[l], STEPS), lost: runs[l].lostGal[STEPS - 1] }));
+    const maxLow = Math.max(1, ...rows.map(r => r.low)), maxLost = Math.max(1, ...rows.map(r => r.lost));
+    $("impactTable").querySelector("tbody").innerHTML = rows.map(r => `<tr><td>${r.l === 0 ? "None (what happened)" : Math.round(r.l * 100) + "%"}</td>
+      <td class="n">${Math.round(100 * r.low / hyd.n)}%</td><td><div class="hbar"><i style="width:${100 * r.low / maxLow}%;background:var(--heat)"></i></div></td>
+      <td class="n">${(r.lost / 1e6).toFixed(1)}M gal</td><td><div class="hbar"><i style="width:${100 * r.lost / maxLost}%;background:var(--signal)"></i></div></td></tr>`).join("");
+  }
+  function fillCalibration() {
+    const r = runs[0], firstEmpty = z => { for (let k = 0; k < STEPS; k++) if (r.tank[k * Z + z] < 0.01) return (k + 1) * DT; return null; };
+    const lowAt = f => Math.round(100 * lowCount(r, f) / hyd.n);
+    const endDry = (() => { let c = 0; for (let j = 0; j < hyd.n; j++) if (psi(r, STEPS, hyd.zone[j], hyd.elev[j]) < 5) c++; return Math.round(100 * c / hyd.n); })();
+    const rows = [
+      ["Marquez Knolls tank dry", "16:45", shortClock(firstEmpty(2))],
+      ["Trailer tank dry", "20:30", shortClock(firstEmpty(3))],
+      ["Temescal tank dry", "03:00", shortClock(firstEmpty(4))],
+      ["Hydrants without water", "About 20%", endDry + "% (mapped area)"],
+      ["Hydrants below 20 psi at 18:30", "First reports", lowAt(96) + "%"],
+    ];
+    $("calTable").querySelector("tbody").innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+    const pr = [
+      ["Leak from one open line at 60 psi", P.leakGpm + " gpm (assumption, calibrated)"],
+      ["Line fails open after fire arrives", P.openDelayMin + " min"],
+      ["Engine draw per burning structure", P.firePerBurningGpm + " gpm"],
+      ["Engines defending each hillside zone", P.defenseGpm.slice(2).join(" / ") + " gpm for " + P.defenseMin / 60 + " h"],
+      ["Pump capacity into 1137 / 1345 / 1645 zones", P.pumpGpm.slice(2).join(" / ") + " gpm"],
+      ["Pumps stop / reach full flow at intake pressure", P.pumpMinSuctionPsi + " / " + P.pumpRestartPsi + " psi"],
+      ["Tank capacity (LADWP)", P.tankGal.slice(2).map(v => (v / 1e6).toFixed(2)).join(" / ") + " million gal"],
+      ["Time step", P.dtMin + " min"],
+    ];
+    $("params").innerHTML = pr.map(p => `<li><b>${p[0]}:</b> ${p[1]}</li>`).join("");
+  }
+
+  // ---------- boot ----------
+  $("repName").textContent = `Hydrant, ${DATA.rep.label}`;
+  $("repSub").textContent = `Zone ${DATA.rep.zone} Marquez Knolls / ${Math.round(DATA.rep.elev)} ft / est.`;
+  $("colB").textContent = "With valves / 100%";
+  $("mappedN").textContent = houses.n.toLocaleString("en-US") + " pts";
+  buildTicks();
+  Promise.all([base.decode(), zimg.decode()]).then(boot, () => { $("loading").textContent = "The map could not load. Reload the page to try again."; });
+  function boot() {
+    buildZoneMasks();
+    let i = 0;
+    (function next() {
+      if (i < LEVELS.length) { runs[LEVELS[i]] = FNSim.run(prep, LEVELS[i]); i++; setTimeout(next, 0); return; }
+      ready = true; $("loading").remove(); $("play").disabled = false;
+      resize(); updatePanel(); fillImpact(); fillCalibration();
+    })();
+  }
+})();
+</script>
+</body>
+</html>
