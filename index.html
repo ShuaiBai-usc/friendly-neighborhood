@@ -291,6 +291,12 @@ body.demo .credit{display:none}
 body.demo .stage-in{grid-template-columns:auto 420px;justify-content:center}
 body.demo .mapcol{width:calc((100vh - 250px) * 1200 / 1024 + 40px)}
 body.demo .xsec,body.demo .legend,body.demo .disclose,body.demo .assume{display:none}
+body.demo #how{min-height:100vh;display:flex;flex-direction:column}
+body.demo #how .sec-body{flex:1;display:flex;flex-direction:column;justify-content:center}
+body.demo #how .steps svg{max-width:460px;margin:22px 0 14px}
+body.demo #how .steps h3{font-size:34px}
+body.demo #how .steps p{font-size:20px}
+body.demo #how .steps li{padding:26px 28px 32px}
 .demo-cap{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:50;background:#000;color:#F2F2EA;border:2px solid #F2F2EA;font-family:var(--mono);font-size:clamp(18px,1.6vw,28px);line-height:1.35;padding:14px 22px;max-width:min(1100px,86vw);text-align:center;box-shadow:6px 6px 0 #FF4A1C;transition:opacity .35s}
 .demo-cap small{display:inline-block;margin-left:10px;font-size:.6em;background:#FFC21A;color:#000;padding:2px 7px;vertical-align:middle;letter-spacing:.05em;text-transform:uppercase}
 .demo-start,.demo-end{position:fixed;inset:0;z-index:60;background:#000;color:#F2F2EA;display:flex;flex-direction:column;justify-content:center;padding:6vw;transition:opacity .6s}
@@ -502,7 +508,6 @@ body.demo .xsec,body.demo .legend,body.demo .disclose,body.demo .assume{display:
         <p>Sensors report which homes have shut off, so the utility knows where water is being lost. After the fire, a quick-reset kit reopens the line.</p>
       </li>
     </ol>
-    <p class="sens-link"><a href="mechanism/">See it work: interactive mechanism explainer &rarr;</a></p>
   </div>
 </section>
 
@@ -1259,23 +1264,35 @@ const DATA = {"window":{"lon0":-118.58,"lon1":-118.505,"lat0":34.03,"lat1":34.08
     D.stop(); D.setAdoption(1); D.setSplit(1); D.setFrame(54);
     end.classList.remove("on"); scrollTo(0, 0);
     const before = D.lowAt(0), after = D.lowAt(1);
-    // 0-5 s: the event
+    // 0-4.5 s: the event
     say("January 7, 2025. The Palisades Fire.");
-    await wait(2500);
+    await wait(2300);
     say("Every burned home left its water line open.");
-    await wait(2500);
-    // 5-9 s: the record
+    await wait(2200);
+    // 4.5-8 s: the record
     const facts = document.querySelector(".facts"); facts.classList.add("hl-flash");
     say("About 200 of 1,000 hydrants lost water. Crews shut ~4,800 open lines by hand, two days later.");
-    await wait(4000); facts.classList.remove("hl-flash");
-    // 9-19 s: what happened
+    await wait(3200); facts.classList.remove("hl-flash");
+    // 8-16 s: what happened
     say("");
-    await scrollToEl(document.getElementById("replay"), 800);
+    await scrollToEl(document.getElementById("replay"), 700);
     say("Real CAL FIRE data. Blue boxes: open water lines. Tanks drain, hydrants fail.", "Pressures: model");
-    await tween(54, 132, 9200, f => D.setFrame(f));
-    // 19-25 s: with valves
+    await tween(54, 132, 6500, f => D.setFrame(f));
+    // 16-21 s: with valves
     say("Same fire, with a valve in every home. The lines close. Hydrants keep pressure.", "Model");
-    await Promise.all([tween(132, 200, 6000, f => D.setFrame(f)), tween(1, 0.3, 2200, s => D.setSplit(s))]);
+    await Promise.all([tween(132, 200, 4500, f => D.setFrame(f)), tween(1, 0.3, 2000, s => D.setSplit(s))]);
+    // 21-26 s: how it works
+    say("");
+    const how = document.getElementById("how");
+    await scrollToEl(how, 700);
+    const steps = [...how.querySelectorAll(".steps li")];
+    const lines = ["1. A sensing loop circles the house.", "2. Fire breaks the loop. The valve shuts the service line.", "3. After the fire, a quick-reset kit reopens it."];
+    for (let i = 0; i < steps.length; i++) {
+      steps.forEach(s => s.classList.remove("hl-flash")); steps[i].classList.add("hl-flash");
+      say(lines[i]);
+      await wait(1400);
+    }
+    steps.forEach(s => s.classList.remove("hl-flash"));
     // 25-30 s: the number
     say("");
     end.innerHTML = `<div class="k">Palisades Fire / next morning / model estimate</div>
