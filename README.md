@@ -10,6 +10,7 @@ When a home burns, its water line stays open and keeps draining the system the h
 |---|---|
 | `index.html` | The landing page. Built, self-contained, opens offline. |
 | `dashboard/` | Utility dashboard (placeholder). |
+| `mechanism/` | Interactive explainer of the loop-pressure shutoff valve, with the team CAD model (COIL_SPRING_v3). Self-contained. |
 | `src/landing.html` | Page template. |
 | `src/sim.js` | Water model, shared by the page and the calibration script. |
 | `scripts/build_data.py` | Turns `data/raw/` into the map assets in `data/build/`. |
