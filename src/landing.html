@@ -1086,7 +1086,7 @@ const DATA = /*__DATA__*/null;
   document.body.classList.add("demo");
   const cap = document.createElement("div"); cap.className = "demo-cap"; cap.style.opacity = 0; document.body.appendChild(cap);
   const start = document.createElement("div"); start.className = "demo-start";
-  start.innerHTML = "<b>Friendly Neighborhood</b>Demo mode / start recording, then click anywhere / 30 seconds";
+  start.innerHTML = "<b>Friendly Neighborhood</b>Demo mode / start recording, then click anywhere / about 37 seconds";
   document.body.appendChild(start);
   const end = document.createElement("div"); end.className = "demo-end"; document.body.appendChild(end);
   const card = document.createElement("div"); card.className = "demo-card"; document.body.appendChild(card);
@@ -1135,9 +1135,25 @@ const DATA = /*__DATA__*/null;
       if (mechOK) { mech.classList.add("on"); try { const d = mech.contentDocument, h = [...d.querySelectorAll("h2")].find(x => /run it/i.test(x.textContent)); if (h) h.scrollIntoView({ block: "start" }); } catch (e) {} }
       else scrollTo(0, document.getElementById("how").getBoundingClientRect().top + scrollY);
     });
-    const mechLines = ["Water pressure in a loop around the house holds the shutoff open.", "Fire breaks the loop. Pressure drops, and a spring shuts the line.", "No power, no electronics. A reset handle re-arms it."];
+    const mechLines = ["Water pressure in a loop around the house holds the shutoff open.", "Fire breaks the loop. Pressure drops, and a spring shuts the line.", "No power, no electronics. Hosing the house doesn't trip it."];
     if (mechOK) {
-      for (const l of mechLines) { say(l); await wait(1750); }
+      const d = (() => { try { return mech.contentDocument; } catch (e) { return null; } })();
+      const find = (sel, re, root) => d ? [...(root || d).querySelectorAll(sel)].find(x => re.test(x.textContent)) : null;
+      // restart the schematic so the gate drops on camera
+      const runH = find("h2", /run it/i), runSec = runH ? runH.closest("section") || runH.parentElement : null;
+      const replay = find("button", /replay/i, runSec || undefined); if (replay) replay.click();
+      for (const l of mechLines) { say(l); await wait(2000); }
+      // then the team's 3D model: pressure lost, spring extends, blade drops, reset
+      const cadH = find("h2", /cad/i);
+      if (cadH) {
+        say("");
+        const y = cadH.getBoundingClientRect().top + mech.contentWindow.scrollY;
+        await tween(mech.contentWindow.scrollY, y, 700, v => mech.contentWindow.scrollTo(0, v));
+        say("The team's 3D model: pressure lost, the spring extends, the blade drops.", "CAD v3");
+        await wait(3200);
+        say("Reset: pressure rebuilds and lifts the piston back.", "CAD v3");
+        await wait(2800);
+      }
     } else {
       const how = document.getElementById("how");
       const steps = [...how.querySelectorAll(".steps li")];
