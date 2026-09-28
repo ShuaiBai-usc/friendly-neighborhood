@@ -24,7 +24,8 @@
     fireCapGpm: [13500, 4500, 4000, 3000, 3000], // max hydrant draw per zone (engines on scene)
     burnMin: 90,             // minutes a structure counts as "burning" for firefighting demand
     defenseGpm: [0, 0, 3250, 2250, 1500], // engines defending a zone while the fire is in it
-    defenseMin: 600,         // how long engines keep defending a zone after the fire first reaches it
+    defenseMin: 360,         // engines defend a zone at full draw this long after the fire first reaches it
+    defenseTaperMin: 480,    // then their draw tapers off linearly over this long (no sudden stop)
     trunkK: 1.2e-7,          // Westgate trunk head loss, ft per gpm^2
     zoneK: [5e-8, 1e-7, 2.2e-6, 4e-6, 6e-6],  // local head loss inside each zone, ft per gpm^2
     pumpGpm: [0, 0, 1800, 1760, 1200],        // pump capacity into zone (1137, 1345, 1645)
@@ -112,7 +113,8 @@
           }
           leak[z] = P.leakGpm * s;
           const pz = PSI_PER_FT * (hz - typElev[z]);
-          const defending = t >= firstFire[z] && t < firstFire[z] + P.defenseMin ? P.defenseGpm[z] : 0;
+          const since = t - firstFire[z];
+          const defending = since < 0 ? 0 : since < P.defenseMin ? P.defenseGpm[z] : P.defenseGpm[z] * Math.max(0, 1 - (since - P.defenseMin) / P.defenseTaperMin);
           fire[z] = Math.min(P.fireCapGpm[z], P.firePerBurningGpm * burning[z] + defending) * Math.max(0, Math.min(1, pz / 40));
           D[z] = leak[z] + fire[z] + P.baseGpmPerHome * standing[z];
         }

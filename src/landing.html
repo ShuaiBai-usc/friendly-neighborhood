@@ -42,7 +42,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
 
 /* ---------- header: a row of cells ---------- */
-.top{display:grid;grid-template-columns:auto 1fr repeat(3,auto) auto;border-bottom:2px solid var(--line);font-family:var(--mono);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.top{display:grid;grid-template-columns:auto 1fr repeat(3,auto);border-bottom:2px solid var(--line);font-family:var(--mono);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
 .top > *{padding:14px 18px;border-right:2px solid var(--line);display:flex;align-items:center;text-decoration:none}
 .top > *:last-child{border-right:0}
 .top .id{background:var(--fg);color:var(--bg);font-weight:700}
@@ -283,6 +283,30 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
 .sens-find p{margin:4px 0 0;font-size:15px;line-height:1.45}
 .sens-find .warn{background:var(--heat);color:#000;flex:1}
 .sens-find .warn .lbl{color:#000}
+
+/* ---------- demo mode (?demo): a scripted 30-second take for screen recording ---------- */
+body.demo{cursor:none;overflow:hidden}
+body.demo .frame{max-width:none}
+body.demo .credit{display:none}
+body.demo .stage-in{grid-template-columns:auto 420px;justify-content:center}
+body.demo .mapcol{width:calc((100vh - 250px) * 1200 / 1024 + 40px)}
+body.demo .xsec,body.demo .legend,body.demo .disclose,body.demo .assume{display:none}
+.demo-cap{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:50;background:#000;color:#F2F2EA;border:2px solid #F2F2EA;font-family:var(--mono);font-size:clamp(18px,1.6vw,28px);line-height:1.35;padding:14px 22px;max-width:min(1100px,86vw);text-align:center;box-shadow:6px 6px 0 #FF4A1C;transition:opacity .35s}
+.demo-cap small{display:inline-block;margin-left:10px;font-size:.6em;background:#FFC21A;color:#000;padding:2px 7px;vertical-align:middle;letter-spacing:.05em;text-transform:uppercase}
+.demo-start,.demo-end{position:fixed;inset:0;z-index:60;background:#000;color:#F2F2EA;display:flex;flex-direction:column;justify-content:center;padding:6vw;transition:opacity .6s}
+.demo-start{cursor:pointer;align-items:center;text-align:center;font-family:var(--mono);font-size:18px;letter-spacing:.06em;text-transform:uppercase}
+.demo-start b{font-family:var(--disp);font-variation-settings:"wdth" 125;font-size:48px;letter-spacing:0;margin-bottom:18px}
+.demo-end{opacity:0;pointer-events:none}
+.demo-end.on{opacity:1}
+.demo-end .k{font-family:var(--mono);font-size:clamp(14px,1.2vw,20px);color:#8C8C85;letter-spacing:.08em;text-transform:uppercase}
+.demo-end h2{font-family:var(--disp);font-variation-settings:"wdth" 125;font-weight:900;font-size:clamp(48px,7vw,120px);line-height:.92;margin:.25em 0;text-transform:uppercase}
+.demo-end .nums{display:flex;gap:4vw;align-items:flex-end;margin:.6em 0 .4em;font-family:var(--mono);font-weight:700}
+.demo-end .nums div{font-size:clamp(56px,7vw,120px);line-height:1}
+.demo-end .nums .a{color:#FF4A1C}.demo-end .nums .b{color:#C6FF3D}
+.demo-end .nums span{display:block;font-size:clamp(12px,1vw,16px);font-weight:500;color:#8C8C85;letter-spacing:.06em;text-transform:uppercase;margin-top:10px}
+.demo-end .arrow{font-size:clamp(40px,5vw,80px);color:#8C8C85}
+.demo-end .url{font-family:var(--mono);font-size:clamp(16px,1.4vw,24px);margin-top:1.2em;border-top:2px solid #4A4A45;padding-top:.8em}
+.hl-flash{outline:4px solid #FFC21A;outline-offset:-4px;transition:outline-color .3s}
 @media (max-width: 1100px){
   .xs-in{grid-template-columns:1fr}
   .xs-note{border-left:0;border-top:2px solid var(--vl2)}
@@ -337,7 +361,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
   <a href="#replay">Replay</a>
   <a href="#how">Mechanism</a>
   <a href="#method">Model</a>
-  <a href="dashboard/">Utility console</a>
+  
 </header>
 
 <main>
@@ -553,7 +577,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
 <footer>
   <span class="lbl">USC Origin Weekend / Fall 2026 / Prompt D</span>
   <div class="prompt">How can we detect infrastructure damage and failures before they become expensive, and rapidly prioritize recovery when they occur?</div>
-  <span class="lbl">Team Friendly Neighborhood / <a href="dashboard/">utility console demo</a></span>
+  <span class="lbl">Team Friendly Neighborhood</span>
 </footer>
 </div>
 
@@ -949,7 +973,7 @@ const DATA = /*__DATA__*/null;
       ["Leak from one open line at 60 psi", Q.leakGpm + " gpm (assumption" + (OVR.leakGpm ? ", changed by you)" : ", calibrated)")],
       ["Line fails open after fire arrives", P.openDelayMin + " min"],
       ["Engine draw per burning structure", Math.round(Q.firePerBurningGpm) + " gpm"],
-      ["Engines defending each hillside zone", Q.defenseGpm.slice(2).map(Math.round).join(" / ") + " gpm for " + Q.defenseMin / 60 + " h"],
+      ["Engines defending each hillside zone", Q.defenseGpm.slice(2).map(Math.round).join(" / ") + " gpm at full draw for " + Q.defenseMin / 60 + " h, then tapering to zero over " + Q.defenseTaperMin / 60 + " h (assumed)"],
       ["Pump capacity into 1137 / 1345 / 1645 zones", Q.pumpGpm.slice(2).map(Math.round).join(" / ") + " gpm"],
       ["Pumps stop / reach full flow at intake pressure", P.pumpMinSuctionPsi + " / " + P.pumpRestartPsi + " psi"],
       ["Tank capacity (LADWP)", P.tankGal.slice(2).map(v => (v / 1e6).toFixed(2)).join(" / ") + " million gal"],
@@ -1029,11 +1053,72 @@ const DATA = /*__DATA__*/null;
     let i = 0;
     (function next() {
       if (i < LEVELS.length) { runs[LEVELS[i]] = FNSim.run(prep, LEVELS[i], OVR); i++; setTimeout(next, 0); return; }
-      ready = true; $("loading").remove(); $("play").disabled = false;
+      ready = true;
+      window.FNDemo = {
+        setFrame(f) { frame = Math.max(0, Math.min(STEPS, Math.round(f))); render(); },
+        setSplit(s) { split = s; $("swipe").value = Math.round(s * 1000); $("rLbl").style.opacity = s > 0.95 ? 0 : 1; document.querySelector(".side-lbl.l").style.opacity = s < 0.05 ? 0 : 1; draw(); },
+        setAdoption(a) { const b = document.querySelector(`[data-ad="${a}"]`); if (b) b.click(); },
+        stop() { if (playing) stop(); },
+        lowAt(level) { return Math.round(100 * lowCount(runs[level], STEPS) / hyd.n); }
+      }; $("loading").remove(); $("play").disabled = false;
       resize(); updatePanel(); drawXS(); fillImpact(); fillCalibration();
       setTimeout(computeSens, 400);
     })();
   }
+})();
+</script>
+<script>
+/* Demo mode: open the page with ?demo, click once, record the next 30 seconds. Press R to restart. */
+(function () {
+  if (!/[?&]demo\b/.test(location.search)) return;
+  document.body.classList.add("demo");
+  const cap = document.createElement("div"); cap.className = "demo-cap"; cap.style.opacity = 0; document.body.appendChild(cap);
+  const start = document.createElement("div"); start.className = "demo-start";
+  start.innerHTML = "<b>Friendly Neighborhood</b>Demo mode / start recording, then click anywhere / 30 seconds";
+  document.body.appendChild(start);
+  const end = document.createElement("div"); end.className = "demo-end"; document.body.appendChild(end);
+  const say = (html, tag) => { cap.style.opacity = 0; setTimeout(() => { cap.innerHTML = html + (tag ? ` <small>${tag}</small>` : ""); cap.style.opacity = html ? 1 : 0; }, 180); };
+  const scrollToEl = (el, ms) => new Promise(res => {
+    const y0 = scrollY, y1 = el ? el.getBoundingClientRect().top + scrollY : 0, t0 = performance.now();
+    (function step(now) { const k = Math.min(1, (now - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; scrollTo(0, y0 + (y1 - y0) * e); k < 1 ? requestAnimationFrame(step) : res(); })(t0);
+  });
+  const tween = (from, to, ms, fn) => new Promise(res => { const t0 = performance.now(); (function step(now) { const k = Math.min(1, (now - t0) / ms); fn(from + (to - from) * k); k < 1 ? requestAnimationFrame(step) : res(); })(t0); });
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const waitReady = () => new Promise(res => { (function chk() { window.FNDemo ? res() : setTimeout(chk, 100); })(); });
+
+  let T0 = 0;
+  async function run() {
+    const D = window.FNDemo; T0 = performance.now();
+    D.stop(); D.setAdoption(1); D.setSplit(1); D.setFrame(54);
+    end.classList.remove("on"); scrollTo(0, 0);
+    const before = D.lowAt(0), after = D.lowAt(1);
+    // 0-5 s: the event
+    say("January 7, 2025. The Palisades Fire.");
+    await wait(2500);
+    say("Every burned home left its water line open.");
+    await wait(2500);
+    // 5-9 s: the record
+    const facts = document.querySelector(".facts"); facts.classList.add("hl-flash");
+    say("About 200 of 1,000 hydrants lost water. Crews shut ~4,800 open lines by hand, two days later.");
+    await wait(4000); facts.classList.remove("hl-flash");
+    // 9-19 s: what happened
+    say("");
+    await scrollToEl(document.getElementById("replay"), 800);
+    say("Real CAL FIRE data. Blue boxes: open water lines. Tanks drain, hydrants fail.", "Pressures: model");
+    await tween(54, 132, 9200, f => D.setFrame(f));
+    // 19-25 s: with valves
+    say("Same fire, with a valve in every home. The lines close. Hydrants keep pressure.", "Model");
+    await Promise.all([tween(132, 200, 6000, f => D.setFrame(f)), tween(1, 0.3, 2200, s => D.setSplit(s))]);
+    // 25-30 s: the number
+    say("");
+    end.innerHTML = `<div class="k">Palisades Fire / next morning / model estimate</div>
+      <h2>A valve that closes<br>when the house is gone</h2>
+      <div class="nums"><div class="a">${before}%<span>hydrants below 20 psi, as it happened</span></div><div class="arrow">→</div><div class="b">${after}%<span>with a valve in every home</span></div></div>
+      <div class="url">Friendly Neighborhood / shuaibai-usc.github.io/friendly-neighborhood</div>`;
+    end.classList.add("on");
+  }
+  start.addEventListener("click", async () => { start.style.opacity = 0; setTimeout(() => start.remove(), 600); await waitReady(); run(); });
+  addEventListener("keydown", e => { if (e.key === "r" || e.key === "R") { waitReady().then(run); } });
 })();
 </script>
 </body>
