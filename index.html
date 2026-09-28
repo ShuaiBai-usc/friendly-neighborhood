@@ -302,7 +302,11 @@ body.demo #how .steps li{padding:26px 28px 32px}
 .demo-start,.demo-end{position:fixed;inset:0;z-index:60;background:#000;color:#F2F2EA;display:flex;flex-direction:column;justify-content:center;padding:6vw;transition:opacity .6s}
 .demo-start{cursor:pointer;align-items:center;text-align:center;font-family:var(--mono);font-size:18px;letter-spacing:.06em;text-transform:uppercase}
 .demo-start b{font-family:var(--disp);font-variation-settings:"wdth" 125;font-size:48px;letter-spacing:0;margin-bottom:18px}
-.demo-end{opacity:0;pointer-events:none}
+.demo-end,.demo-card{opacity:0;pointer-events:none}
+.demo-card{position:fixed;inset:0;z-index:55;background:#000;color:#F2F2EA;display:flex;flex-direction:column;justify-content:center;padding:6vw;transition:opacity .35s}
+.demo-card.on{opacity:1}
+.demo-card .k{font-family:var(--mono);font-size:clamp(14px,1.2vw,20px);color:#FF4A1C;letter-spacing:.08em;text-transform:uppercase}
+.demo-card h2{font-family:var(--disp);font-variation-settings:"wdth" 125;font-weight:900;font-size:clamp(48px,7vw,120px);line-height:.92;margin:.25em 0 0;text-transform:uppercase}
 .demo-end.on{opacity:1}
 .demo-end .k{font-family:var(--mono);font-size:clamp(14px,1.2vw,20px);color:#8C8C85;letter-spacing:.08em;text-transform:uppercase}
 .demo-end h2{font-family:var(--disp);font-variation-settings:"wdth" 125;font-weight:900;font-size:clamp(48px,7vw,120px);line-height:.92;margin:.25em 0;text-transform:uppercase}
@@ -313,6 +317,8 @@ body.demo #how .steps li{padding:26px 28px 32px}
 .demo-end .arrow{font-size:clamp(40px,5vw,80px);color:#8C8C85}
 .demo-end .url{font-family:var(--mono);font-size:clamp(16px,1.4vw,24px);margin-top:1.2em;border-top:2px solid #4A4A45;padding-top:.8em}
 .hl-flash{outline:4px solid #FFC21A;outline-offset:-4px;transition:outline-color .3s}
+.demo-mech{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:40;background:#000;opacity:0;pointer-events:none;transition:opacity .5s}
+.demo-mech.on{opacity:1}
 @media (max-width: 1100px){
   .xs-in{grid-template-columns:1fr}
   .xs-note{border-left:0;border-top:2px solid var(--vl2)}
@@ -365,7 +371,7 @@ body.demo #how .steps li{padding:26px 28px 32px}
   <div class="id">FN/01</div>
   <div class="name">Friendly Neighborhood</div>
   <a href="#replay">Replay</a>
-  <a href="#how">Mechanism</a>
+  <a href="mechanism/">Mechanism</a>
   <a href="#method">Model</a>
   
 </header>
@@ -487,25 +493,25 @@ body.demo #how .steps li{padding:26px 28px 32px}
   <div class="mod"><div class="no">04</div><div class="grow">Mechanism</div></div>
   <div class="sec-body">
     <div class="sec-head"><h2>A valve that closes when the house is gone</h2>
-    <p class="lead">Firefighters can't shut off thousands of water lines in the middle of a firestorm. The house has to do it for them.</p></div>
+    <p class="lead">Firefighters can't shut off thousands of water lines in the middle of a firestorm. The house has to do it for them. <a href="mechanism/">Interactive mechanism &rarr;</a></p></div>
     <ol class="steps">
       <li>
-        <span class="lbl">Step 1 / Sense</span>
+        <span class="lbl">Step 1 / Armed</span>
         <svg viewBox="0 0 240 120" aria-hidden="true"><path d="M70 104V60l50-34 50 34v44z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter"/><rect x="50" y="36" width="140" height="76" fill="none" stroke="var(--signal)" stroke-width="3" stroke-dasharray="8 6"/><path d="M4 112h46" stroke="var(--signal)" stroke-width="5"/><rect x="42" y="104" width="16" height="16" fill="var(--lock)"/></svg>
-        <h3>A sensing loop circles the house</h3>
-        <p>A thin loop of pipe branches off the water service and runs around the house, with temperature sensors along it.</p>
+        <h3>Water pressure holds it open</h3>
+        <p>A thin, fragile pipe loop wraps the house and stays full of pressurized water. That pressure holds a spring-loaded gate up, out of the service line.</p>
       </li>
       <li>
-        <span class="lbl">Step 2 / Shut</span>
+        <span class="lbl">Step 2 / Loop breaks</span>
         <svg viewBox="0 0 240 120" aria-hidden="true"><path d="M70 104V60l50-34 50 34v44z" fill="none" stroke="var(--heat)" stroke-width="3"/><path d="M50 60v52h62M190 50v62h-56" fill="none" stroke="var(--signal)" stroke-width="3" stroke-dasharray="8 6"/><path d="M114 102l12 12m0-12-12 12" stroke="var(--heat)" stroke-width="4"/><path d="M4 112h36" stroke="var(--signal)" stroke-width="5"/><rect x="38" y="102" width="20" height="20" fill="var(--lock)"/><path d="M42 112h12" stroke="#000" stroke-width="3"/></svg>
-        <h3>Fire breaks the loop, the valve shuts</h3>
-        <p>When heat or a collapse breaks the loop, the valve on the main service line closes and the house stops drawing water from the street.</p>
+        <h3>Lose the loop, the spring shuts it</h3>
+        <p>When fire melts the loop or the house collapses onto it, the pressure is gone and the spring drives the gate down. No power, no electronics in the shutoff path. Hosing the house does not trip it.</p>
       </li>
       <li>
-        <span class="lbl">Step 3 / Report</span>
+        <span class="lbl">Step 3 / Reset</span>
         <svg viewBox="0 0 240 120" aria-hidden="true"><rect x="20" y="20" width="130" height="84" fill="none" stroke="currentColor" stroke-width="3"/><path d="M20 40h130" stroke="currentColor" stroke-width="2"/><rect x="40" y="54" width="10" height="10" fill="var(--lock)"/><rect x="66" y="72" width="10" height="10" fill="var(--lock)"/><rect x="92" y="52" width="10" height="10" fill="var(--signal)"/><rect x="118" y="80" width="10" height="10" fill="var(--lock)"/><path d="M178 62h44M200 40v44" stroke="var(--lock)" stroke-width="6"/></svg>
-        <h3>The utility sees it, the owner resets it</h3>
-        <p>Sensors report which homes have shut off, so the utility knows where water is being lost. After the fire, a quick-reset kit reopens the line.</p>
+        <h3>Repair the loop, pull the handle</h3>
+        <p>Cap or repair the loop, then pull the reset handle. Pressure rebuilds, re-cocks the spring, and holds the gate open again. <a href="mechanism/">See it move &rarr;</a></p>
       </li>
     </ol>
   </div>
@@ -1249,6 +1255,16 @@ const DATA = {"window":{"lon0":-118.58,"lon1":-118.505,"lat0":34.03,"lat1":34.08
   start.innerHTML = "<b>Friendly Neighborhood</b>Demo mode / start recording, then click anywhere / 30 seconds";
   document.body.appendChild(start);
   const end = document.createElement("div"); end.className = "demo-end"; document.body.appendChild(end);
+  const card = document.createElement("div"); card.className = "demo-card"; document.body.appendChild(card);
+  // divider card between demo chapters; `behind` runs while the card covers the screen
+  async function chapter(kicker, title, ms, behind) {
+    say(""); card.innerHTML = `<div class="k">${kicker}</div><h2>${title}</h2>`; card.classList.add("on");
+    await wait(380); if (behind) await behind(); await wait(Math.max(0, ms - 380 - 380)); card.classList.remove("on"); await wait(380);
+  }
+  // the mechanism page lives at /mechanism/ on the deployed site; preload it so it is ready by 20 s
+  const mech = document.createElement("iframe"); mech.className = "demo-mech"; mech.title = "Mechanism"; mech.setAttribute("aria-hidden", "true");
+  let mechOK = false;
+  if (location.protocol.startsWith("http")) fetch("mechanism/", { method: "HEAD" }).then(r => { if (r.ok) { mechOK = true; mech.src = "mechanism/"; document.body.appendChild(mech); } }).catch(() => {});
   const say = (html, tag) => { cap.style.opacity = 0; setTimeout(() => { cap.innerHTML = html + (tag ? ` <small>${tag}</small>` : ""); cap.style.opacity = html ? 1 : 0; }, 180); };
   const scrollToEl = (el, ms) => new Promise(res => {
     const y0 = scrollY, y1 = el ? el.getBoundingClientRect().top + scrollY : 0, t0 = performance.now();
@@ -1262,44 +1278,46 @@ const DATA = {"window":{"lon0":-118.58,"lon1":-118.505,"lat0":34.03,"lat1":34.08
   async function run() {
     const D = window.FNDemo; T0 = performance.now();
     D.stop(); D.setAdoption(1); D.setSplit(1); D.setFrame(54);
-    end.classList.remove("on"); scrollTo(0, 0);
+    end.classList.remove("on"); card.classList.remove("on"); mech.classList.remove("on"); scrollTo(0, 0);
     const before = D.lowAt(0), after = D.lowAt(1);
     // 0-4.5 s: the event
     say("January 7, 2025. The Palisades Fire.");
-    await wait(2300);
+    await wait(2100);
     say("Every burned home left its water line open.");
-    await wait(2200);
+    await wait(2000);
     // 4.5-8 s: the record
     const facts = document.querySelector(".facts"); facts.classList.add("hl-flash");
     say("About 200 of 1,000 hydrants lost water. Crews shut ~4,800 open lines by hand, two days later.");
-    await wait(3200); facts.classList.remove("hl-flash");
-    // 8-16 s: what happened
-    say("");
-    await scrollToEl(document.getElementById("replay"), 700);
+    await wait(2900); facts.classList.remove("hl-flash");
+    // chapter 2: the replay
+    await chapter("01 / Replay", "The first 24 hours,<br>on real data", 1700, async () => { scrollTo(0, document.getElementById("replay").getBoundingClientRect().top + scrollY); });
     say("Real CAL FIRE data. Blue boxes: open water lines. Tanks drain, hydrants fail.", "Pressures: model");
-    await tween(54, 132, 6500, f => D.setFrame(f));
+    await tween(54, 132, 5000, f => D.setFrame(f));
     // 16-21 s: with valves
     say("Same fire, with a valve in every home. The lines close. Hydrants keep pressure.", "Model");
-    await Promise.all([tween(132, 200, 4500, f => D.setFrame(f)), tween(1, 0.3, 2000, s => D.setSplit(s))]);
-    // 21-26 s: how it works
-    say("");
-    const how = document.getElementById("how");
-    await scrollToEl(how, 700);
-    const steps = [...how.querySelectorAll(".steps li")];
-    const lines = ["1. A sensing loop circles the house.", "2. Fire breaks the loop. The valve shuts the service line.", "3. After the fire, a quick-reset kit reopens it."];
-    for (let i = 0; i < steps.length; i++) {
-      steps.forEach(s => s.classList.remove("hl-flash")); steps[i].classList.add("hl-flash");
-      say(lines[i]);
-      await wait(1400);
+    await Promise.all([tween(132, 200, 3600, f => D.setFrame(f)), tween(1, 0.3, 1600, s => D.setSplit(s))]);
+    // chapter 3: how it works (the team's mechanism page, framed full screen)
+    await chapter("02 / Mechanism", "How does Friendly<br>Neighborhood work?", 1700, async () => {
+      if (mechOK) { mech.classList.add("on"); try { const d = mech.contentDocument, h = [...d.querySelectorAll("h2")].find(x => /run it/i.test(x.textContent)); if (h) h.scrollIntoView({ block: "start" }); } catch (e) {} }
+      else scrollTo(0, document.getElementById("how").getBoundingClientRect().top + scrollY);
+    });
+    const mechLines = ["Water pressure in a loop around the house holds the shutoff open.", "Fire breaks the loop. Pressure drops, and a spring shuts the line.", "No power, no electronics. A reset handle re-arms it."];
+    if (mechOK) {
+      for (const l of mechLines) { say(l); await wait(1750); }
+    } else {
+      const how = document.getElementById("how");
+      const steps = [...how.querySelectorAll(".steps li")];
+      for (let i = 0; i < steps.length; i++) { steps.forEach(s => s.classList.remove("hl-flash")); steps[i].classList.add("hl-flash"); say(mechLines[i]); await wait(1650); }
+      steps.forEach(s => s.classList.remove("hl-flash"));
     }
-    steps.forEach(s => s.classList.remove("hl-flash"));
     // 25-30 s: the number
     say("");
-    end.innerHTML = `<div class="k">Palisades Fire / next morning / model estimate</div>
+    end.innerHTML = `<div class="k">03 / Result / Palisades Fire, next morning / model estimate</div>
       <h2>A valve that closes<br>when the house is gone</h2>
       <div class="nums"><div class="a">${before}%<span>hydrants below 20 psi, as it happened</span></div><div class="arrow">→</div><div class="b">${after}%<span>with a valve in every home</span></div></div>
       <div class="url">Friendly Neighborhood / shuaibai-usc.github.io/friendly-neighborhood</div>`;
     end.classList.add("on");
+    mech.classList.remove("on");
   }
   start.addEventListener("click", async () => { start.style.opacity = 0; setTimeout(() => start.remove(), 600); await waitReady(); run(); });
   addEventListener("keydown", e => { if (e.key === "r" || e.key === "R") { waitReady().then(run); } });
