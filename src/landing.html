@@ -56,6 +56,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .hero-main{padding:44px 28px 36px;border-right:2px solid var(--line);position:relative;color:#F2F2EA;min-height:clamp(420px,46vw,620px);display:flex;flex-direction:column;justify-content:flex-end;
   background:linear-gradient(90deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.55) 38%,rgba(0,0,0,0) 62%),linear-gradient(0deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 35%),url("/*__HERO__*/") 22% 36% / 165% auto no-repeat #1a0a04}
 .hero-main h1{font-size:clamp(38px,4.7vw,76px);max-width:74%}
+
 .hero-main .deck{max-width:52%}
 .hero-main .burn{color:#000 !important;background:#F2F2EA !important}
 .credit{position:absolute;top:0;right:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;background:#000;color:#8C8C85;padding:5px 9px;border-left:2px solid #2E2E2B;border-bottom:2px solid #2E2E2B}
@@ -295,7 +296,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
   .chartbox{grid-column:2;grid-row:4;border-left:2px solid var(--vl2)}
   .status{grid-row:5}
   .ticker{grid-row:6}
-  .hero{grid-template-columns:1fr}
+  .hero{grid-template-columns:minmax(0,1fr)}
   .hero-main{border-right:0;border-bottom:2px solid var(--line);min-height:480px}
 }
 @media (max-width: 760px){
@@ -336,7 +337,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
   <a href="#replay">Replay</a>
   <a href="#how">Mechanism</a>
   <a href="#method">Model</a>
-  <div class="off" title="The utility dashboard is being built">Dashboard offline</div>
+  <a href="dashboard/">Utility console</a>
 </header>
 
 <main>
@@ -552,7 +553,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
 <footer>
   <span class="lbl">USC Origin Weekend / Fall 2026 / Prompt D</span>
   <div class="prompt">How can we detect infrastructure damage and failures before they become expensive, and rapidly prioritize recovery when they occur?</div>
-  <span class="lbl">Team Friendly Neighborhood / utility dashboard in progress</span>
+  <span class="lbl">Team Friendly Neighborhood / <a href="dashboard/">utility console demo</a></span>
 </footer>
 </div>
 

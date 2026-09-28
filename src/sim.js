@@ -68,13 +68,15 @@
         if (hash01(i) < adoption) valved[i] = 1;
       }
     }
+    // optional crew shut-offs: Int32Array of minutes after ignition when a crew closes home i's line (-1 = never)
+    const man = P.manual || null;
     const V = P.tankGal.slice();
     const pumpOn = G.map(() => true);
     let head = G.slice();
     const out = {
       adoption, head: new Float32Array(N * Z), tank: new Float32Array(N * Z),
       open: new Uint16Array(N), closed: new Uint16Array(N), leakGpm: new Float32Array(N),
-      lostGal: new Float64Array(N), fireGpm: new Float32Array(N), pumps: new Uint8Array(N), trunkGpm: new Float32Array(N),
+      lostGal: new Float64Array(N), fireGpm: new Float32Array(N), pumps: new Uint8Array(N), trunkGpm: new Float32Array(N), crew: new Uint16Array(N),
     };
     let lost = 0;
     const openList = G.map(() => []);
@@ -83,7 +85,7 @@
     for (let k = 0; k < N; k++) {
       const t = (k + 1) * dt;
       for (let z = 0; z < Z; z++) { openList[z].length = 0; burning[z] = 0; standing[z] = homes[z]; }
-      let nOpen = 0, nClosed = 0;
+      let nOpen = 0, nClosed = 0, nCrew = 0;
       for (let i = 0; i < n; i++) {
         const a = h.arr[i];
         if (a === 65535 || a > t) continue;
@@ -92,7 +94,9 @@
         if (h.dmg[i] === 4) {
           standing[z]--;
           if (openAt[i] >= 0 && openAt[i] <= t) {
-            if (valved[i]) nClosed++; else { openList[z].push(i); nOpen++; }
+            if (valved[i]) nClosed++;
+            else if (man && man[i] >= 0 && man[i] <= t) nCrew++;
+            else { openList[z].push(i); nOpen++; }
           }
         }
       }
@@ -146,7 +150,7 @@
       for (let z = 0; z < Z; z++) { lk += leak[z]; fg += fire[z]; }
       lost += lk * dt;
       for (let z = 0; z < Z; z++) { out.head[k * Z + z] = head[z]; out.tank[k * Z + z] = P.tankGal[z] ? V[z] / P.tankGal[z] : 1; }
-      out.open[k] = nOpen; out.closed[k] = nClosed; out.leakGpm[k] = lk; out.lostGal[k] = lost; out.fireGpm[k] = fg; out.trunkGpm[k] = trunkQ;
+      out.open[k] = nOpen; out.closed[k] = nClosed; out.leakGpm[k] = lk; out.lostGal[k] = lost; out.fireGpm[k] = fg; out.trunkGpm[k] = trunkQ; out.crew[k] = nCrew;
       out.pumps[k] = (pumpOn[2] ? 1 : 0) | (pumpOn[3] ? 2 : 0) | (pumpOn[4] ? 4 : 0);
     }
     return out;

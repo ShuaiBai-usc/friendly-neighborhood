@@ -1,4 +1,5 @@
-"""Assemble the self-contained landing page: src/landing.html + src/sim.js + data/build/landing-data.json -> index.html
+"""Assemble the self-contained pages: src/landing.html -> index.html and src/dashboard.html -> dashboard/index.html,
+each with src/sim.js and data/build/landing-data.json inlined.
 Run: python3 scripts/build_data.py && python3 scripts/build_page.py
 """
 import json
@@ -10,3 +11,7 @@ hero = "data:image/jpeg;base64," + base64.b64encode(open("assets/hero.jpg", "rb"
 out = tpl.replace("/*__HERO__*/", hero).replace("/*__SIM__*/", sim).replace("/*__DATA__*/null", json.dumps(data, separators=(",", ":")))
 open("index.html", "w").write(out)
 print(f"index.html {len(out)//1024} KB")
+
+dash = open("src/dashboard.html").read().replace("/*__SIM__*/", sim).replace("/*__DATA__*/null", json.dumps(data, separators=(",", ":")))
+open("dashboard/index.html", "w").write(dash)
+print(f"dashboard/index.html {len(dash)//1024} KB")

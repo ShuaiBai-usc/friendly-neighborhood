@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Friendly Neighborhood: utility console (demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --v:#000; --v2:#0B0B0B; --vl:#2E2E2B; --vl2:#4A4A45; --bone:#F2F2EA; --ash:#8C8C85;
+  --heat:#FF4A1C; --signal:#29E3FF; --lock:#C6FF3D; --warn:#FFC21A;
+  --disp:"Archivo","Arial Black",Impact,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --body:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --v:#000; } }
+:root[data-theme="dark"]{ --v:#000; }
+*,*::before,*::after{box-sizing:inherit;border-radius:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--v);color:var(--bone);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+button{font:inherit;color:inherit;cursor:pointer}
+.lbl{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ash)}
+.mono{font-family:var(--mono)}
+
+.top{display:flex;flex-wrap:wrap;align-items:stretch;border-bottom:2px solid var(--vl2);font-family:var(--mono);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em}
+.top > *{padding:12px 16px;border-right:2px solid var(--vl2);display:flex;align-items:center;gap:10px}
+.top .id{background:var(--bone);color:#000;font-weight:700}
+.top .name{font-family:var(--disp);font-variation-settings:"wdth" 118;font-weight:800;font-size:16px;letter-spacing:0;text-transform:none}
+.top .grow{flex:1;border-right:0}
+.top a{text-decoration:none}
+.top a:hover{background:var(--bone);color:#000}
+.demo{background:var(--warn);color:#000;font-weight:700}
+
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;padding:12px 16px;border-bottom:2px solid var(--vl2)}
+.btn{border:2px solid var(--bone);background:var(--v);color:var(--bone);padding:7px 14px;font-family:var(--mono);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.btn.play{background:var(--heat);border-color:var(--heat);color:#000;min-width:96px;box-shadow:4px 4px 0 var(--bone)}
+.btn.play:active{transform:translate(4px,4px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.clock{font-family:var(--mono);font-weight:700;font-size:20px;display:flex;flex-direction:column;justify-content:center;line-height:1.1;font-variant-numeric:tabular-nums}
+.clock small{font-size:11px;color:var(--ash);font-weight:500;letter-spacing:.06em}
+.scrub{flex:1;min-width:200px;display:flex;align-items:center}
+.scrub input{width:100%;accent-color:var(--heat)}
+.seg{display:inline-flex;border:2px solid var(--vl2)}
+.seg button{border:0;border-right:2px solid var(--vl2);background:transparent;padding:7px 11px;font-family:var(--mono);font-weight:700;font-size:12.5px;color:var(--ash)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--bone);color:#000}
+.seglbl{font-family:var(--mono);font-size:11.5px;color:var(--ash);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center}
+
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-bottom:2px solid var(--vl2)}
+.kpi{padding:12px 16px;border-right:2px solid var(--vl2)}
+.kpi:last-child{border-right:0}
+.kpi b{display:block;font-family:var(--mono);font-size:28px;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi small{font-family:var(--mono);font-size:11px;color:var(--ash)}
+.kpi.hot b{color:var(--heat)}.kpi.ok b{color:var(--lock)}.kpi.sig b{color:var(--signal)}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 440px}
+.mapcol{border-right:2px solid var(--vl2);min-width:0}
+.mapbox{position:relative;background:#000;cursor:crosshair;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+.mapbox canvas{display:block;width:100%;height:auto}
+.hud{position:absolute;width:18px;height:18px;border:0 solid var(--bone);pointer-events:none}
+.hud.tl{left:6px;top:6px;border-left-width:2px;border-top-width:2px}.hud.tr{right:6px;top:6px;border-right-width:2px;border-top-width:2px}
+.hud.bl{left:6px;bottom:6px;border-left-width:2px;border-bottom-width:2px}.hud.br{right:6px;bottom:6px;border-right-width:2px;border-bottom-width:2px}
+.tip{position:absolute;pointer-events:none;font-family:var(--mono);font-size:11.5px;background:#000;border:1px solid var(--bone);padding:6px 9px;white-space:nowrap;transform:translate(12px,-50%);display:none;z-index:3;text-transform:uppercase;letter-spacing:.03em;line-height:1.5}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--mono);font-size:11.5px;color:var(--ash);padding:10px 16px;text-transform:uppercase;letter-spacing:.04em;border-top:2px solid var(--vl2)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.lg{width:10px;height:10px;display:inline-block}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:13px;text-transform:uppercase;letter-spacing:.08em;background:rgba(0,0,0,.85)}
+
+.zones{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.zones th{font-weight:500;font-size:11px;color:var(--ash);text-transform:uppercase;letter-spacing:.05em;text-align:right;padding:9px 12px;border-bottom:2px solid var(--vl2);border-top:2px solid var(--vl2);white-space:nowrap}
+.zones th:first-child,.zones td:first-child{text-align:left}
+.zones td{padding:8px 12px;border-bottom:1px solid var(--vl);text-align:right;white-space:nowrap}
+.zones td.name b{color:var(--signal)}
+.zones tr.bad td{background:rgba(255,74,28,.12)}
+.gauge{display:inline-block;width:64px;height:9px;border:1px solid var(--vl2);vertical-align:middle;position:relative}
+.gauge i{position:absolute;left:0;top:0;bottom:0;background:var(--signal)}
+.pbar{display:inline-block;width:70px;height:9px;border:1px solid var(--vl2);vertical-align:middle;position:relative;margin-left:8px}
+.pbar i{position:absolute;left:0;top:0;bottom:0}
+.rank{font-weight:700}
+.tscroll{overflow-x:auto}
+
+.side{display:flex;flex-direction:column;min-width:0}
+.side > section{border-bottom:2px solid var(--vl2)}
+.sh{display:flex;align-items:stretch;border-bottom:2px solid var(--vl2);font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.sh > *{padding:9px 14px;display:flex;align-items:center;border-right:2px solid var(--vl2)}
+.sh .no{background:var(--heat);color:#000;font-weight:700}
+.sh .grow{flex:1}.sh > *:last-child{border-right:0}
+.qhelp{font-size:13px;color:var(--ash);padding:10px 14px 0;margin:0}
+.qbar{display:flex;gap:8px;padding:10px 14px;align-items:center;flex-wrap:wrap}
+.mini{border:1px solid var(--vl2);background:transparent;color:var(--bone);font-family:var(--mono);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px}
+.mini.solid{background:var(--bone);color:#000;border-color:var(--bone)}
+.mini:hover{border-color:var(--bone)}
+.mini:disabled{opacity:.35;cursor:default}
+.qbar .note{font-family:var(--mono);font-size:11px;color:var(--ash);margin-left:auto}
+ol.queue{list-style:none;margin:0;padding:0}
+ol.queue li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--vl);cursor:pointer}
+ol.queue li:hover,ol.queue li.sel{background:#141412}
+ol.queue li.sel{box-shadow:inset 3px 0 0 var(--warn)}
+.q-rank{font-family:var(--mono);font-weight:700;font-size:16px;color:var(--heat)}
+.q-main{min-width:0}
+.q-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q-meta{font-family:var(--mono);font-size:11.5px;color:var(--ash)}
+.q-meta b{color:var(--bone);font-weight:500}
+.q-st{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;padding:2px 6px}
+.q-st.enroute{background:var(--warn);color:#000}
+.q-st.done{background:var(--lock);color:#000}
+.empty{padding:14px;color:var(--ash);font-family:var(--mono);font-size:12px}
+.feed{list-style:none;margin:0;padding:0;max-height:260px;overflow:auto;font-family:var(--mono);font-size:12px}
+.feed li{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;padding:7px 14px;border-top:1px solid var(--vl)}
+.feed time{color:var(--ash)}
+.feed .rep{color:var(--warn)}
+.feed .dev{color:var(--lock)}
+.feed .crew{color:var(--signal)}
+.feed .alarm{color:var(--heat)}
+.foot{padding:12px 16px;font-family:var(--mono);font-size:11.5px;color:var(--ash);line-height:1.6;border-top:2px solid var(--vl2)}
+
+@media (max-width: 1150px){
+  .main{grid-template-columns:1fr}
+  .mapcol{border-right:0}
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi:nth-child(3){border-right:0}
+  .kpi:nth-child(n+4){border-top:2px solid var(--vl2)}
+}
+@media (max-width: 640px){
+  .top .hide-s,.seglbl{display:none}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi{border-right:2px solid var(--vl2)!important;border-top:2px solid var(--vl2)}
+  .kpi:nth-child(2n){border-right:0!important}
+  .kpi b{font-size:22px}
+  .clock{font-size:16px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="id">FN/02</div>
+  <div class="name">Friendly Neighborhood</div>
+  <div class="hide-s">Utility console</div>
+  <div class="grow"></div>
+  <div class="demo" title="There is no real device network yet. Device reports are simulated on real Palisades data.">Demo / simulated devices</div>
+  <a href="../">Fire replay</a>
+</header>
+
+<div class="ctrl">
+  <button class="btn play" id="play" disabled>Play</button>
+  <div class="clock"><small id="tplus">T+00:00</small><span id="clock">2025-01-07 10:30</span></div>
+  <div class="seg" role="group" aria-label="Playback speed"><button data-sp="1" aria-pressed="true">1×</button><button data-sp="3" aria-pressed="false">3×</button></div>
+  <div class="scrub"><input type="range" id="scrub" min="0" max="288" value="0" aria-label="Incident time"></div>
+  <span class="seglbl" id="adLbl">Homes with a device</span>
+  <div class="seg" role="group" aria-labelledby="adLbl"><button data-ad="0" aria-pressed="false">0%</button><button data-ad="0.25" aria-pressed="false">25%</button><button data-ad="0.5" aria-pressed="true">50%</button><button data-ad="1" aria-pressed="false">100%</button></div>
+</div>
+
+<div class="kpis" aria-live="polite">
+  <div class="kpi ok"><span class="lbl">Devices closed</span><b id="kClosed">0</b><small id="kClosedS">reported by radio</small></div>
+  <div class="kpi hot"><span class="lbl">Suspected open lines</span><b id="kOpen">0</b><small>destroyed, no device</small></div>
+  <div class="kpi sig"><span class="lbl">Crew shut-offs</span><b id="kCrew">0</b><small id="kCrewS">0 en route</small></div>
+  <div class="kpi hot"><span class="lbl">Hydrants &lt; 20 psi</span><b id="kLow">0</b><small id="kLowS">of 852</small></div>
+  <div class="kpi"><span class="lbl">Leak flow now</span><b id="kFlow">0</b><small id="kFlowS">gpm, estimated</small></div>
+</div>
+
+<div class="main">
+  <div class="mapcol">
+    <div class="mapbox" id="mapbox">
+      <canvas id="map" role="img" aria-label="Map of Pacific Palisades showing each home's device status and hydrant pressure"></canvas>
+      <i class="hud tl"></i><i class="hud tr"></i><i class="hud bl"></i><i class="hud br"></i>
+      <div class="tip" id="tip"></div>
+      <div class="loading" id="loading">Loading network_</div>
+    </div>
+    <div class="legend">
+      <span><i class="lg" style="background:#3A3A36"></i>No device</span>
+      <span><i class="lg" style="outline:2px solid #6E8A2A;outline-offset:-2px"></i>Device armed</span>
+      <span><i class="lg" style="background:var(--heat)"></i>Burning</span>
+      <span><i class="lg" style="background:#1A1A18;outline:2px solid var(--lock)"></i>Device closed</span>
+      <span><i class="lg" style="background:#1A1A18;outline:2px solid var(--heat)"></i>Suspected open line</span>
+      <span><i class="lg" style="background:#1A1A18;outline:2px solid var(--signal)"></i>Closed by crew</span>
+      <span><i class="lg" style="background:var(--signal);transform:rotate(45deg) scale(.75)"></i>Hydrant ≥ 20 psi</span>
+      <span><i class="lg" style="outline:2px solid var(--heat);transform:rotate(45deg) scale(.75)"></i>Hydrant &lt; 20 psi</span>
+    </div>
+    <div class="tscroll">
+      <table class="zones" id="zones" aria-label="Pressure zone status"></table>
+    </div>
+    <p class="foot">Real data: structure locations and damage (CAL FIRE), hydrants (LADWP, LA County), terrain (USGS). Simulated: which homes have a device, device reports, crews. Computed by the replay's water model: pressures, tank levels, leaks. Crews close a line <span id="crewMin">30</span> minutes after dispatch. Zones are ranked for restoration by standing homes without usable water (Homes dry).</p>
+  </div>
+
+  <aside class="side">
+    <section>
+      <div class="sh"><div class="no">A</div><div class="grow">Shut-off queue</div><div id="qCount">0 open</div></div>
+      <p class="qhelp">Destroyed homes with no device, so their line is probably still open. Ranked by how much water each one is losing now, weighted toward zones where hydrants are already failing.</p>
+      <div class="qbar">
+        <button class="mini solid" id="dispTop" disabled>Dispatch top 5</button>
+        <button class="mini" id="clearAll" disabled>Recall all crews</button>
+        <span class="note" id="qNote"></span>
+      </div>
+      <ol class="queue" id="queue"></ol>
+    </section>
+    <section>
+      <div class="sh"><div class="no" style="background:var(--signal)">B</div><div class="grow">Dispatched</div><div id="dCount">0</div></div>
+      <ol class="queue" id="disp"></ol>
+    </section>
+    <section style="border-bottom:0">
+      <div class="sh"><div class="no" style="background:var(--warn)">C</div><div class="grow">Event feed</div></div>
+      <ol class="feed" id="feed"></ol>
+    </section>
+  </aside>
+</div>
+
+<script>
+/*__SIM__*/
+</script>
+<script>
+const DATA = /*__DATA__*/null;
+(function () {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const dec = (s, T) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new T(u.buffer); };
+  const W = DATA.window.width, H = DATA.window.height, Z = DATA.zones.length, G = DATA.zones;
+  const houses = { n: DATA.houses.n, x: dec(DATA.houses.x, Uint16Array), y: dec(DATA.houses.y, Uint16Array), elev: dec(DATA.houses.elev, Uint16Array), zone: dec(DATA.houses.zone, Uint8Array), dmg: dec(DATA.houses.dmg, Uint8Array), arr: dec(DATA.houses.arr, Uint16Array) };
+  const hyd = { n: DATA.hydrants.n, x: dec(DATA.hydrants.x, Uint16Array), y: dec(DATA.hydrants.y, Uint16Array), elev: dec(DATA.hydrants.elev, Uint16Array), zone: dec(DATA.hydrants.zone, Uint8Array) };
+  const P = FNSim.PARAMS, STEPS = P.steps, DT = P.dtMin, CREW_MIN = 30;
+  const prep = FNSim.prepare({ zones: G, houses });
+  const TANK = { 2: "Marquez Knolls", 3: "Trailer", 4: "Temescal" };
+  const ZONE_FEED = ["trunk (PRV)", "trunk", "Marquez Knolls tank", "Trailer tank", "Temescal tank"];
+
+  let frame = 0, playing = false, speed = 1, adoption = 0.5, timer = null, ready = false, pulse = 0, selHome = -1;
+  let run = null, baseRun = null;                // current world, and the same world with no crews
+  const manual = new Int32Array(houses.n).fill(-1);   // crew close time (minutes), -1 = not dispatched
+  const dispatchedAt = new Int32Array(houses.n).fill(-1);
+
+  const clockOf = f => { const m = 630 + f * DT, d = m >= 1440 ? 8 : 7, mm = m % 1440; return `2025-01-0${d} ${String(Math.floor(mm / 60)).padStart(2, "0")}:${String(mm % 60).padStart(2, "0")}`; };
+  const hhmm = m => { const mm = (630 + m) % 1440; return `${String(Math.floor(mm / 60)).padStart(2, "0")}:${String(mm % 60).padStart(2, "0")}`; };
+  const headAt = (r, f, z) => f === 0 ? G[z] : r.head[(f - 1) * Z + z];
+  const psi = (r, f, z, elev) => Math.max(0, FNSim.PSI_PER_FT * (headAt(r, f, z) - elev));
+  const tankAt = (r, f, z) => f === 0 ? 1 : r.tank[(f - 1) * Z + z];
+  const hasDevice = i => FNSim.hash01(i) < adoption;
+  const fmt = n => Math.round(n).toLocaleString("en-US");
+
+  // home state at time t (minutes)
+  const OPEN = 1, DEVCLOSED = 2, CREWED = 3, BURNING = 4, DESTROYED_PRE = 5, SCORCH = 6, ARMED = 7, NONE = 0;
+  function stateOf(i, t) {
+    const a = houses.arr[i], d = houses.dmg[i];
+    if (a !== 65535 && a <= t) {
+      if (d >= 1 && t - a < 60) return BURNING;
+      if (d === 4) {
+        if (t < a + P.openDelayMin) return DESTROYED_PRE;
+        if (hasDevice(i)) return DEVCLOSED;
+        if (manual[i] >= 0 && manual[i] <= t) return CREWED;
+        return OPEN;
+      }
+      if (d >= 1) return SCORCH;
+    }
+    return hasDevice(i) ? ARMED : NONE;
+  }
+
+  // nearest labelled hydrant = human-readable location for a home
+  const nameCache = new Map();
+  function homeName(i) {
+    if (nameCache.has(i)) return nameCache.get(i);
+    let best = -1, bd = 1e12;
+    for (let j = 0; j < hyd.n; j++) { if (!DATA.hydLabels[j]) continue; const dx = hyd.x[j] - houses.x[i], dy = hyd.y[j] - houses.y[i], d = dx * dx + dy * dy; if (d < bd) { bd = d; best = j; } }
+    const m = Math.round(Math.sqrt(bd) / 4 * DATA.window.m_per_px);
+    const s = best >= 0 ? `Near ${DATA.hydLabels[best].replace(/ \(Pvt\)/i, "")}${m > 60 ? ` (${m} m)` : ""}` : "Unnamed street";
+    nameCache.set(i, s); return s;
+  }
+
+  // ---------- model ----------
+  function recompute(withBase) {
+    run = FNSim.run(prep, adoption, { manual });
+    if (withBase) baseRun = FNSim.run(prep, adoption);
+  }
+
+  // ---------- queue ----------
+  function lowInZone(r, f) { const c = new Array(Z).fill(0); for (let j = 0; j < hyd.n; j++) if (psi(r, f, hyd.zone[j], hyd.elev[j]) < P.usablePsi) c[hyd.zone[j]]++; return c; }
+  function queueItems() {
+    const t = frame * DT, low = lowInZone(run, frame), items = [];
+    for (let i = 0; i < houses.n; i++) {
+      if (houses.dmg[i] !== 4 || dispatchedAt[i] >= 0) continue;
+      if (stateOf(i, t) !== OPEN) continue;
+      const z = houses.zone[i], p = psi(run, frame, z, houses.elev[i]);
+      const flow = p > 0 ? P.leakGpm * Math.sqrt(Math.min(p / 60, 1.6)) : 0;
+      const weight = 1 + low[z] / 10;
+      items.push({ i, z, flow, weight, score: flow * weight + (houses.elev[i] / 1e5) });
+    }
+    items.sort((a, b) => b.score - a.score);
+    return items;
+  }
+
+  // ---------- dispatch ----------
+  function dispatch(list) {
+    const t = frame * DT;
+    list.forEach(i => { dispatchedAt[i] = t; manual[i] = t + CREW_MIN; });
+    recompute(false); logCrew(list.length, t); renderAll();
+  }
+  function recall() { manual.fill(-1); dispatchedAt.fill(-1); crewLog.length = 0; recompute(false); renderAll(); }
+  const crewLog = [];
+  function logCrew(n, t) { crewLog.push({ m: t, txt: `${n} crew${n > 1 ? "s" : ""} dispatched to open lines`, cls: "crew" }); }
+
+  // ---------- map ----------
+  const canvas = $("map"), ctx = canvas.getContext("2d");
+  const base = new Image(); base.src = DATA.basemap;
+  const zimg = new Image(); zimg.src = DATA.zonemap;
+  let scale = 1, zoneMasks = null, contourLayer = null, SP = {};
+  function sprite(r, draw) { const c = document.createElement("canvas"); c.width = c.height = Math.ceil(r * 2); draw(c.getContext("2d"), r); return c; }
+  function buildSprites() {
+    const s = Math.max(1, scale);
+    const sq = (col, half) => sprite(half * s + 1, (g, r) => { g.fillStyle = col; const a = half * s; g.fillRect(r - a, r - a, 2 * a, 2 * a); });
+    const box = (col, half, w) => sprite((half + w) * s + 1, (g, r) => { g.strokeStyle = col; g.lineWidth = w * s; const a = half * s; g.strokeRect(r - a, r - a, 2 * a, 2 * a); });
+    const glow = sprite(10 * s, (g, r) => { const gr = g.createRadialGradient(r, r, 0, r, r, r); gr.addColorStop(0, "rgba(255,120,40,.95)"); gr.addColorStop(.3, "rgba(255,74,28,.6)"); gr.addColorStop(1, "rgba(255,74,28,0)"); g.fillStyle = gr; g.fillRect(0, 0, 2 * r, 2 * r); });
+    SP = { none: sq("#3A3A36", 1.4), armed: box("#6E8A2A", 1.8, 1), burn: sq("#FFE08A", 1.6), gone: sq("#1A1A18", 1.7), scorch: sq("#6A4A30", 1.5),
+      open: box("#FF4A1C", 3.0, 1.3), devc: box("#C6FF3D", 2.8, 1.2), crew: box("#29E3FF", 3.0, 1.4), glow, sel: box("#FFC21A", 7, 2) };
+    const dia = (fill, stroke, size) => sprite(5 * s + 1, (g, r) => { g.translate(r, r); g.rotate(Math.PI / 4); const a = size * s; if (fill) { g.fillStyle = fill; g.fillRect(-a, -a, 2 * a, 2 * a); } g.strokeStyle = stroke; g.lineWidth = 1.3 * s; g.strokeRect(-a, -a, 2 * a, 2 * a); });
+    SP.hOk = dia("rgba(41,227,255,.7)", "rgba(0,0,0,.9)", 2.1); SP.hLow = dia(null, "#FF4A1C", 3.1);
+  }
+  function buildZoneMasks() {
+    const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d");
+    g.drawImage(zimg, 0, 0); const src = g.getImageData(0, 0, W, H).data;
+    const make = (z, rgb) => { const m = document.createElement("canvas"); m.width = W; m.height = H; const mg = m.getContext("2d"), id = mg.createImageData(W, H), d = id.data;
+      for (let p = 0; p < src.length; p += 4) if (src[p] === z + 1) { d[p] = rgb[0]; d[p + 1] = rgb[1]; d[p + 2] = rgb[2]; d[p + 3] = 255; }
+      mg.putImageData(id, 0, 0); return m; };
+    zoneMasks = G.map((_, z) => ({ wet: make(z, [0, 150 + z * 18, 180 + z * 15]), dry: make(z, [110, 60, 40]) }));
+  }
+  function buildContours() {
+    const c = document.createElement("canvas"); c.width = canvas.width; c.height = canvas.height;
+    const g = c.getContext("2d"), k = scale, B = new Set(DATA.boundaries);
+    for (const [lv, pts] of DATA.contours) {
+      const isB = B.has(lv), major = lv % 500 === 0;
+      g.beginPath(); for (let i = 0; i < pts.length; i += 2) { const x = pts[i] * k, y = pts[i + 1] * k; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+      if (isB) { g.strokeStyle = "rgba(41,227,255,.55)"; g.lineWidth = 1.2 * k; g.setLineDash([5 * k, 4 * k]); }
+      else if (major) { g.strokeStyle = "rgba(242,242,234,.4)"; g.lineWidth = 1 * k; g.setLineDash([]); }
+      else { g.strokeStyle = "rgba(242,242,234,.14)"; g.lineWidth = .6 * k; g.setLineDash([]); }
+      g.stroke();
+    }
+    contourLayer = c;
+  }
+  function resize() {
+    const cssW = $("mapbox").clientWidth, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssW * dpr * H / W);
+    scale = canvas.width / W; buildSprites(); buildContours(); draw();
+  }
+  function draw() {
+    if (!ready) return;
+    const t = frame * DT, s = scale / 4, cw = canvas.width, ch = canvas.height;
+    ctx.drawImage(base, 0, 0, cw, ch);
+    for (let z = 0; z < Z; z++) {
+      let tp = 0, nz = 0; for (let j = 0; j < hyd.n; j++) if (hyd.zone[j] === z) { tp += psi(run, frame, z, hyd.elev[j]); nz++; }
+      const w = Math.max(0, Math.min(1, (nz ? tp / nz : 0) / 50));
+      ctx.globalAlpha = .15 * w; ctx.drawImage(zoneMasks[z].wet, 0, 0, cw, ch);
+      ctx.globalAlpha = .22 * (1 - w); ctx.drawImage(zoneMasks[z].dry, 0, 0, cw, ch);
+    }
+    ctx.globalAlpha = 1; ctx.drawImage(contourLayer, 0, 0);
+    const burning = [], rings = [];
+    for (let i = 0; i < houses.n; i++) {
+      const px = houses.x[i] * s, py = houses.y[i] * s, st = stateOf(i, t);
+      let sp = SP.none, ring = null;
+      if (st === BURNING) { burning.push(i); continue; }
+      if (st === ARMED) sp = SP.armed;
+      else if (st === SCORCH) sp = SP.scorch;
+      else if (st === DESTROYED_PRE) sp = SP.gone;
+      else if (st === DEVCLOSED) { sp = SP.gone; ring = SP.devc; }
+      else if (st === CREWED) { sp = SP.gone; ring = SP.crew; }
+      else if (st === OPEN) { sp = SP.gone; ring = SP.open; if (dispatchedAt[i] >= 0) ring = SP.crew; }
+      ctx.drawImage(sp, px - sp.width / 2, py - sp.height / 2);
+      if (ring) rings.push([ring, px, py, st === OPEN && dispatchedAt[i] < 0]);
+    }
+    const pa = 0.55 + 0.45 * Math.sin(pulse);
+    for (const [r, x, y, blink] of rings) { ctx.globalAlpha = blink ? pa : 1; ctx.drawImage(r, x - r.width / 2, y - r.height / 2); }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "lighter";
+    for (const i of burning) { const x = houses.x[i] * s, y = houses.y[i] * s; ctx.drawImage(SP.glow, x - SP.glow.width / 2, y - SP.glow.height / 2); }
+    ctx.globalCompositeOperation = "source-over";
+    for (const i of burning) { const x = houses.x[i] * s, y = houses.y[i] * s; ctx.drawImage(SP.burn, x - SP.burn.width / 2, y - SP.burn.height / 2); }
+    for (let j = 0; j < hyd.n; j++) { const p = psi(run, frame, hyd.zone[j], hyd.elev[j]), sp = p >= 20 ? SP.hOk : SP.hLow; ctx.drawImage(sp, hyd.x[j] * s - sp.width / 2, hyd.y[j] * s - sp.height / 2); }
+    if (selHome >= 0) { const x = houses.x[selHome] * s, y = houses.y[selHome] * s; ctx.drawImage(SP.sel, x - SP.sel.width / 2, y - SP.sel.height / 2); }
+  }
+
+  // ---------- panels ----------
+  function renderKpis() {
+    const k = frame - 1, t = frame * DT;
+    let dev = 0, open = 0, crewed = 0, enroute = 0;
+    for (let i = 0; i < houses.n; i++) {
+      if (houses.dmg[i] !== 4) continue;
+      const st = stateOf(i, t);
+      if (st === DEVCLOSED) dev++; else if (st === OPEN) { open++; if (dispatchedAt[i] >= 0) enroute++; } else if (st === CREWED) crewed++;
+    }
+    $("kClosed").textContent = fmt(dev);
+    $("kOpen").textContent = fmt(open);
+    $("kCrew").textContent = fmt(crewed); $("kCrewS").textContent = `${enroute} en route`;
+    let low = 0; for (let j = 0; j < hyd.n; j++) if (psi(run, frame, hyd.zone[j], hyd.elev[j]) < 20) low++;
+    let lowBase = 0; for (let j = 0; j < hyd.n; j++) if (psi(baseRun, frame, hyd.zone[j], hyd.elev[j]) < 20) lowBase++;
+    $("kLow").textContent = low;
+    $("kLowS").textContent = crewed + enroute > 0 && lowBase !== low ? `of 852 / ${lowBase - low > 0 ? lowBase - low + " fewer" : low - lowBase + " more"} than no crews` : "of 852";
+    $("kFlow").textContent = k >= 0 ? fmt(run.leakGpm[k]) : "0";
+    $("clock").textContent = clockOf(frame);
+    $("tplus").textContent = "T+" + String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0");
+    $("scrub").value = frame;
+  }
+  function renderZones() {
+    const t = frame * DT, low = lowInZone(run, frame), nz = new Array(Z).fill(0);
+    for (let j = 0; j < hyd.n; j++) nz[hyd.zone[j]]++;
+    const openZ = new Array(Z).fill(0), devZ = new Array(Z).fill(0), dry = new Array(Z).fill(0);
+    for (let i = 0; i < houses.n; i++) {
+      const z = houses.zone[i], st = stateOf(i, t);
+      if (st === OPEN) openZ[z]++; else if (st === DEVCLOSED) devZ[z]++;
+      const standing = !(houses.dmg[i] === 4 && houses.arr[i] !== 65535 && houses.arr[i] <= t);
+      if (standing && psi(run, frame, z, houses.elev[i]) < 20) dry[z]++;
+    }
+    const order = [...G.keys()].sort((a, b) => dry[b] - dry[a]);
+    let h = `<thead><tr><th title="Restoration order: most standing homes without usable water first">Restore</th><th>Zone</th><th>Fed by</th><th>Pressure</th><th>Tank</th><th>Pump</th><th title="Hydrants below 20 psi">Hyd &lt; 20</th><th title="Suspected open lines">Open</th><th title="Devices closed">Closed</th><th title="Standing homes without usable water pressure">Homes dry</th></tr></thead><tbody>`;
+    order.forEach((z, r) => {
+      const p = psi(run, frame, z, prep.typElev[z]), pc = p >= 35 ? "var(--signal)" : p >= 20 ? "var(--warn)" : "var(--heat)";
+      const pumpOn = z >= 2 ? (frame === 0 ? 1 : (run.pumps[frame - 1] >> (z - 2)) & 1) : null;
+      h += `<tr class="${dry[z] > 0 ? "bad" : ""}"><td class="rank">${dry[z] > 0 ? r + 1 : "–"}</td><td class="name"><b>${G[z]}</b></td><td>${ZONE_FEED[z]}</td>
+        <td>${Math.round(p)} psi<span class="pbar"><i style="width:${Math.min(100, p)}%;background:${pc}"></i></span></td>
+        <td>${z >= 2 ? `<span class="gauge"><i style="width:${100 * tankAt(run, frame, z)}%"></i></span>` : "–"}</td>
+        <td>${pumpOn === null ? "–" : pumpOn ? "RUN" : '<span style="color:var(--heat)">STOP</span>'}</td>
+        <td>${low[z]} / ${nz[z]}</td><td>${fmt(openZ[z])}</td><td>${fmt(devZ[z])}</td><td style="color:${dry[z] ? "var(--heat)" : "inherit"}">${fmt(dry[z])}</td></tr>`;
+    });
+    $("zones").innerHTML = h + "</tbody>";
+  }
+  function qRow(it, n, disp) {
+    const i = it.i, t = frame * DT;
+    const status = disp ? (manual[i] <= t ? '<span class="q-st done">Closed</span>' : `<span class="q-st enroute">ETA ${hhmm(manual[i])}</span>`) : `<button class="mini" data-d="${i}">Dispatch</button>`;
+    return `<li data-h="${i}" class="${i === selHome ? "sel" : ""}"><span class="q-rank">${disp ? "" : n}</span><div class="q-main"><div class="q-name">${homeName(i)}</div>
+      <div class="q-meta">Zone <b>${G[it.z]}</b> / ${houses.elev[i]} ft${disp ? "" : ` / <b>${Math.round(it.flow)} gpm</b> x ${it.weight.toFixed(1)}`}</div></div>${status}</li>`;
+  }
+  function renderQueue() {
+    const items = queueItems();
+    $("qCount").textContent = `${fmt(items.length)} open`;
+    $("queue").innerHTML = items.length ? items.slice(0, 8).map((it, n) => qRow(it, n + 1, false)).join("") : `<li class="empty">${frame === 0 ? "No losses yet. Press Play." : "No undispatched open lines."}</li>`;
+    $("dispTop").disabled = items.length === 0;
+    $("qNote").textContent = items.length > 8 ? `+${fmt(items.length - 8)} more` : "";
+    const d = []; for (let i = 0; i < houses.n; i++) if (dispatchedAt[i] >= 0) d.push({ i, z: houses.zone[i] });
+    d.sort((a, b) => dispatchedAt[b.i] - dispatchedAt[a.i]);
+    $("dCount").textContent = d.length;
+    $("disp").innerHTML = d.length ? d.slice(0, 6).map(it => qRow(it, 0, true)).join("") + (d.length > 6 ? `<li class="empty">+${d.length - 6} more</li>` : "") : `<li class="empty">No crews out.</li>`;
+    $("clearAll").disabled = d.length === 0;
+  }
+  const REPORTED = [
+    { m: 0, txt: "Fire reported southeast of Palisades Dr", src: "CAL FIRE" },
+    { m: 375, txt: "Marquez Knolls tank dry", src: "LADWP via ABC7" },
+    { m: 480, txt: "First radio reports of low hydrant pressure", src: "CNRA memo" },
+    { m: 600, txt: "Trailer tank dry", src: "LADWP via ABC7" },
+    { m: 990, txt: "Temescal tank empty", src: "LADWP via ABC7" },
+  ];
+  function renderFeed() {
+    const t = frame * DT, ev = [];
+    REPORTED.forEach(e => { if (e.m <= t) ev.push({ m: e.m, cls: "rep", txt: `Reported: ${e.txt} (${e.src})` }); });
+    // device trips, grouped per 30 minutes
+    const bucket = new Map();
+    for (let i = 0; i < houses.n; i++) {
+      if (houses.dmg[i] !== 4 || houses.arr[i] === 65535 || !hasDevice(i)) continue;
+      const m = houses.arr[i] + P.openDelayMin; if (m > t) continue;
+      const b = Math.floor(m / 30) * 30; bucket.set(b, (bucket.get(b) || 0) + 1);
+    }
+    bucket.forEach((n, b) => ev.push({ m: b, cls: "dev", txt: `${n} device${n > 1 ? "s" : ""} closed and reported` }));
+    for (let z = 2; z < Z; z++) { for (let k = 0; k < frame; k++) if (run.tank[k * Z + z] < 0.01) { ev.push({ m: (k + 1) * DT, cls: "alarm", txt: `Model: ${TANK[z]} tank empty` }); break; } }
+    crewLog.forEach(c => { if (c.m <= t) ev.push(c); });
+    ev.sort((a, b) => b.m - a.m);
+    $("feed").innerHTML = ev.length ? ev.slice(0, 40).map(e => `<li><time>${hhmm(e.m)}</time><span class="${e.cls}">${e.txt}</span></li>`).join("") : `<li class="empty">Quiet.</li>`;
+  }
+  function renderAll() { draw(); renderKpis(); renderZones(); renderQueue(); renderFeed(); }
+
+  // ---------- interaction ----------
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-d]"); if (b) { e.stopPropagation(); dispatch([+b.dataset.d]); return; }
+    const li = e.target.closest("li[data-h]"); if (li) { selHome = +li.dataset.h; renderAll(); }
+  });
+  $("dispTop").onclick = () => dispatch(queueItems().slice(0, 5).map(x => x.i));
+  $("clearAll").onclick = recall;
+  const tick = () => { frame = Math.min(STEPS, frame + 1); renderAll(); if (frame >= STEPS) stop(true); };
+  function start() { if (frame >= STEPS) frame = 0; playing = true; $("play").textContent = "Pause"; clearInterval(timer); timer = setInterval(tick, 160 / speed); }
+  function stop(done) { playing = false; clearInterval(timer); $("play").textContent = done ? "Replay" : "Play"; }
+  $("play").onclick = () => playing ? stop() : start();
+  $("scrub").oninput = e => { frame = +e.target.value; renderAll(); };
+  document.querySelectorAll("[data-sp]").forEach(b => b.onclick = () => { speed = +b.dataset.sp; document.querySelectorAll("[data-sp]").forEach(x => x.setAttribute("aria-pressed", x === b)); if (playing) { clearInterval(timer); timer = setInterval(tick, 160 / speed); } });
+  document.querySelectorAll("[data-ad]").forEach(b => b.onclick = () => {
+    adoption = +b.dataset.ad; document.querySelectorAll("[data-ad]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    recompute(true); renderAll();
+  });
+  (function mapPointer() {
+    const box = $("mapbox"), tip = $("tip");
+    const nearest = (mx, my, max) => { const k = box.clientWidth / W; let best = -1, bd = max * max, kind = null;
+      for (let i = 0; i < houses.n; i++) { const dx = houses.x[i] / 4 * k - mx, dy = houses.y[i] / 4 * k - my, d = dx * dx + dy * dy; if (d < bd) { bd = d; best = i; kind = "h"; } }
+      for (let j = 0; j < hyd.n; j++) { const dx = hyd.x[j] / 4 * k - mx, dy = hyd.y[j] / 4 * k - my, d = dx * dx + dy * dy; if (d < bd * 0.6) { bd = d; best = j; kind = "y"; } }
+      return [kind, best]; };
+    const label = st => ["No device", "Suspected open line", "Device closed", "Closed by crew", "Burning", "Destroyed", "Damaged", "Device armed"][st];
+    box.addEventListener("pointermove", e => {
+      if (!ready || e.pointerType !== "mouse") return;
+      const r = box.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, [kind, i] = nearest(x, y, 9);
+      if (i < 0) { tip.style.display = "none"; return; }
+      if (kind === "y") tip.innerHTML = `Hydrant ${DATA.hydLabels[i] || DATA.hydIds[i]}<br>Zone ${G[hyd.zone[i]]} / ${Math.round(psi(run, frame, hyd.zone[i], hyd.elev[i]))} psi`;
+      else { const st = stateOf(i, frame * DT); tip.innerHTML = `${homeName(i)}<br>${label(st)}${dispatchedAt[i] >= 0 && st === OPEN ? ", crew en route" : ""} / zone ${G[houses.zone[i]]}${st === OPEN && dispatchedAt[i] < 0 ? "<br>Click to dispatch a crew" : ""}`; }
+      tip.style.left = x + "px"; tip.style.top = y + "px"; tip.style.display = "block";
+    });
+    box.addEventListener("pointerleave", () => tip.style.display = "none");
+    box.addEventListener("click", e => {
+      if (!ready) return;
+      const r = box.getBoundingClientRect(), [kind, i] = nearest(e.clientX - r.left, e.clientY - r.top, e.pointerType === "touch" ? 16 : 9);
+      if (kind !== "h") return;
+      selHome = i;
+      if (stateOf(i, frame * DT) === OPEN && dispatchedAt[i] < 0) dispatch([i]); else renderAll();
+    });
+  })();
+  (function anim() { if (ready && !playing) { pulse += .18; draw(); } else pulse += .18; requestAnimationFrame(anim); })();
+  window.addEventListener("resize", () => { clearTimeout(resize.t); resize.t = setTimeout(resize, 120); });
+
+  $("crewMin").textContent = CREW_MIN;
+  Promise.all([base.decode(), zimg.decode()]).then(() => {
+    buildZoneMasks();
+    setTimeout(() => {
+      recompute(true); ready = true; $("loading").remove(); $("play").disabled = false;
+      resize(); renderAll();
+    }, 20);
+  });
+})();
+</script>
+</body>
+</html>
