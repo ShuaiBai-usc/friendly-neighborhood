@@ -88,15 +88,25 @@ dpi = 100
 fig = plt.figure(figsize=(WIDTH / dpi, HEIGHT / dpi), dpi=dpi)
 ax = fig.add_axes([0, 0, 1, 1])
 ax.imshow(rgb, extent=(0, WIDTH, HEIGHT, 0), interpolation="bilinear")
-land_elev = np.where(ocean, np.nan, elev_ft)
-ax.contour(np.arange(WIDTH) + 0.5, np.arange(HEIGHT) + 0.5, land_elev,
-           levels=[l for l in range(100, 2000, 100) if l % 500], colors=["#55554F"],
-           linewidths=0.35, alpha=0.5)
-ax.contour(np.arange(WIDTH) + 0.5, np.arange(HEIGHT) + 0.5, land_elev,
-           levels=[500, 1000, 1500], colors=["#8A8A82"], linewidths=0.7, alpha=0.65)
 ax.set_xlim(0, WIDTH); ax.set_ylim(HEIGHT, 0); ax.axis("off")
 buf = io.BytesIO(); fig.savefig(buf, format="png", dpi=dpi); plt.close(fig)
 base = Image.open(buf).convert("RGB").resize((WIDTH, HEIGHT))
+
+# ---------- vector contours (drawn by the page, so they stay crisp and can be labelled) ----------
+from shapely.geometry import LineString
+land_elev = np.where(ocean, np.nan, elev_ft)
+BOUNDARIES = [z - 100 for z in ZONES[:-1]]  # elevations where one zone hands over to the next
+levels = sorted(set([l for l in range(100, 2000, 100)] + BOUNDARIES))
+cfig = plt.figure(); cs = plt.contour(np.arange(WIDTH) + 0.5, np.arange(HEIGHT) + 0.5, land_elev, levels=levels); plt.close(cfig)
+contours = []
+for lv, segs in zip(cs.levels, cs.allsegs):
+    for seg in segs:
+        if len(seg) < 8:
+            continue
+        ls = LineString(seg).simplify(1.2)
+        pts = np.round(np.array(ls.coords)).astype(int).ravel().tolist()
+        if len(pts) >= 8:
+            contours.append([int(round(lv)), pts])
 
 # ---------- structures ----------
 S = json.load(open(RAW + "palisades_structures_dins.geojson"))["features"]
@@ -174,6 +184,24 @@ yy = np.round(np.array([h["y"] for h in hyd]) * 4).astype("<u2")
 yelev = np.round(np.array([h["elev"] for h in hyd])).astype("<u2")
 yzone = np.array([h["zone"] for h in hyd], "u1")
 
+# One preset hydrant per zone (same rule as the default: street-labelled, ordinary static
+# pressure, nearest the homes that burned first). Any hydrant can also be clicked on the map.
+def pick(zi, lo, hi):
+    best, bd = None, 1e18
+    for i, h in enumerate(hyd):
+        st = 0.433 * (ZONES[h["zone"]] - h["elev"])
+        if h["zone"] != zi or not h["label"] or not (lo <= st <= hi):
+            continue
+        d = np.min(np.hypot(early[:, 0] - h["x"], early[:, 1] - h["y"])) if len(early) else 0
+        if d < bd:
+            best, bd = i, d
+    return best
+presets = []
+for zi in range(len(ZONES)):
+    i = rep if zi == 2 else (pick(zi, 60, 100) or pick(zi, 30, 150) or pick(zi, 0, 999))
+    if i is not None:
+        presets.append(i)
+
 out = dict(
     window=dict(lon0=LON0, lon1=LON1, lat0=LAT0, lat1=LAT1, width=WIDTH, height=HEIGHT, m_per_px=M_PER_PX),
     zones=ZONES,
@@ -181,9 +209,14 @@ out = dict(
     zonemap=data_uri(zimg, "PNG", optimize=True),
     houses=dict(n=len(houses), x=b64(hx), y=b64(hy), elev=b64(helev), zone=b64(hzone), dmg=b64(hdmg), arr=b64(harr)),
     hydrants=dict(n=len(hyd), x=b64(yx), y=b64(yy), elev=b64(yelev), zone=b64(yzone)),
+    presets=presets,
+    hydLabels=[h["label"] or "" for h in hyd],
+    hydIds=[str(h["id"] or "") for h in hyd],
     rep=dict(index=rep, label=hyd[rep]["label"], id=hyd[rep]["id"], elev=hyd[rep]["elev"], zone=ZONES[hyd[rep]["zone"]]),
     ignition=px(-118.5452, 34.0762),
     zoneLabels=zone_labels,
+    contours=contours,
+    boundaries=BOUNDARIES,
 )
 json.dump(out, open(OUT, "w"))
 print(f"map {WIDTH}x{HEIGHT}, {M_PER_PX:.1f} m/px; houses {len(houses)} (destroyed {int((hdmg==4).sum())}); hydrants {len(hyd)}")

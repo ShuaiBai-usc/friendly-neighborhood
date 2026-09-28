@@ -53,10 +53,16 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* ---------- hero ---------- */
 .hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;border-bottom:2px solid var(--line)}
-.hero-main{padding:44px 28px 36px;border-right:2px solid var(--line)}
+.hero-main{padding:44px 28px 36px;border-right:2px solid var(--line);position:relative;color:#F2F2EA;min-height:clamp(420px,46vw,620px);display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(90deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.55) 38%,rgba(0,0,0,0) 62%),linear-gradient(0deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 35%),url("/*__HERO__*/") 22% 36% / 165% auto no-repeat #1a0a04}
+.hero-main h1{font-size:clamp(38px,4.7vw,76px);max-width:74%}
+.hero-main .deck{max-width:52%}
+.hero-main .burn{color:#000 !important;background:#F2F2EA !important}
+.credit{position:absolute;top:0;right:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;background:#000;color:#8C8C85;padding:5px 9px;border-left:2px solid #2E2E2B;border-bottom:2px solid #2E2E2B}
+.credit a{color:#F2F2EA;text-decoration:none}.credit a:hover{background:#F2F2EA;color:#000}
 .hero h1{font-family:var(--disp);font-variation-settings:"wdth" 125;font-weight:900;font-size:clamp(40px,6.6vw,96px);line-height:.9;letter-spacing:-.02em;margin:0;text-transform:uppercase}
 .hero h1 .burn{display:block;color:var(--bg);background:var(--heat);width:fit-content;padding:0 .12em;margin-top:.08em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
-.deck{font-size:19px;line-height:1.5;margin:28px 0 0;max-width:60ch}
+.deck{font-size:clamp(17px,1.35vw,22px);line-height:1.5;margin:28px 0 0;max-width:none;text-shadow:0 1px 12px rgba(0,0,0,.6)}
 .incident{font-family:var(--mono);font-size:13px;display:flex;flex-direction:column}
 .incident div{padding:12px 16px;border-bottom:2px solid var(--line);display:flex;justify-content:space-between;gap:12px}
 .incident div:last-child{border-bottom:0}
@@ -98,7 +104,7 @@ sup a{text-decoration:none;font-family:var(--mono);font-size:11px;padding:0 2px;
 .seg button[aria-pressed="true"]{background:var(--bone);color:#000}
 .seglbl{font-family:var(--mono);font-size:12px;color:var(--ash);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center}
 .spacer{flex:1}
-.mapbox{position:relative;background:#000;touch-action:pan-y;border:2px solid var(--vl2)}
+.mapbox{position:relative;background:#000;touch-action:pan-y;border:2px solid var(--vl2);user-select:none;-webkit-user-select:none}
 .mapbox canvas{display:block;width:100%;height:auto}
 .hud{position:absolute;width:18px;height:18px;border:0 solid var(--bone);pointer-events:none}
 .hud.tl{left:6px;top:6px;border-left-width:2px;border-top-width:2px}
@@ -111,7 +117,16 @@ sup a{text-decoration:none;font-family:var(--mono);font-size:11px;padding:0 2px;
 .divider{position:absolute;top:0;bottom:0;width:2px;background:var(--bone);transform:translateX(-1px);pointer-events:none}
 .knob{position:absolute;top:50%;left:50%;width:30px;height:30px;margin:-15px 0 0 -15px;background:var(--bone);display:grid;place-items:center;box-shadow:3px 3px 0 #000}
 .knob svg{width:18px;height:18px}
-.swipe{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:ew-resize;-webkit-appearance:none;appearance:none}
+.swipe{position:absolute;left:0;bottom:0;width:100%;height:1px;opacity:0;margin:0;pointer-events:none;-webkit-appearance:none;appearance:none}
+.mapbox{cursor:crosshair}
+.mapbox.near-div{cursor:ew-resize}.mapbox.near-hyd{cursor:pointer}
+.hover-tip{position:absolute;pointer-events:none;font-family:var(--mono);font-size:11.5px;background:#000;color:var(--bone);border:1px solid var(--bone);padding:5px 8px;white-space:nowrap;transform:translate(12px,-50%);z-index:3;display:none;text-transform:uppercase;letter-spacing:.03em}
+.hover-tip b{color:var(--n-heat)}.hover-tip i{font-style:normal;color:var(--n-lock)}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.picks .lbl{color:var(--ash);margin-right:2px}
+.picks button{border:1px solid var(--vl2);background:transparent;color:var(--bone);font-family:var(--mono);font-size:11.5px;font-weight:700;padding:3px 7px}
+.picks button[aria-pressed="true"]{background:var(--n-signal);border-color:var(--n-signal);color:#000}
+.picks small{flex-basis:100%;font-family:var(--mono);font-size:11px;color:var(--ash);text-transform:uppercase;letter-spacing:.04em}
 .coord{position:absolute;font-family:var(--mono);font-size:10px;color:rgba(242,242,234,.45);pointer-events:none;white-space:nowrap}
 .note{position:absolute;pointer-events:none;font-family:var(--mono);font-size:11.5px;line-height:1.3;color:var(--bone);transition:opacity .3s}
 .note .pin{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border:2px solid var(--n-heat)}
@@ -154,6 +169,18 @@ sup a{text-decoration:none;font-family:var(--mono);font-size:11px;padding:0 2px;
 .cmp td:first-child{text-align:left;color:var(--ash);padding-left:18px;text-transform:uppercase;font-size:11.5px;letter-spacing:.04em}
 .gauge{display:inline-block;width:70px;height:10px;border:1px solid var(--vl2);vertical-align:middle;position:relative}
 .gauge i{position:absolute;left:0;top:0;bottom:0;background:var(--n-signal)}
+.assume{padding:12px 18px 14px}
+.a-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.a-head .lbl{color:var(--ash);flex:1}
+.a-state{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:var(--n-lock);color:#000;padding:1px 6px}
+.a-state.changed{background:var(--n-heat)}
+.a-state.busy{background:var(--n-warn)}
+.mini{border:1px solid var(--vl2);background:transparent;color:var(--bone);font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px}
+.mini:hover{border-color:var(--bone)}
+.assume label{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:0 10px;padding:5px 0;font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ash)}
+.assume output{font-weight:700;font-size:14px;color:var(--bone);text-transform:none}
+.assume input{grid-column:1 / -1;width:100%;margin:4px 0 0;accent-color:var(--n-heat)}
+.sens-link{font-size:16px;margin:24px 0 0}
 .status{padding:10px 18px;font-family:var(--mono);font-size:12.5px;min-height:40px;text-transform:uppercase;letter-spacing:.03em}
 .status.ok{background:var(--n-lock);color:#000}
 .status.bad{background:var(--n-heat);color:#000}
@@ -168,8 +195,11 @@ sup a{text-decoration:none;font-family:var(--mono);font-size:11px;padding:0 2px;
 /* ---------- sections ---------- */
 .sec{border-bottom:2px solid var(--line)}
 .sec-body{padding:36px 28px 40px}
-.sec h2{font-family:var(--disp);font-variation-settings:"wdth" 125;font-weight:900;font-size:clamp(30px,4vw,56px);line-height:.95;letter-spacing:-.015em;margin:0 0 16px;text-transform:uppercase;max-width:20ch}
-.sec .lead{font-size:18px;margin:0 0 28px;max-width:64ch}
+.sec h2{font-family:var(--disp);font-variation-settings:"wdth" 125;font-weight:900;font-size:clamp(30px,4vw,56px);line-height:.95;letter-spacing:-.015em;margin:0 0 16px;text-transform:uppercase}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 40px;align-items:end;margin-bottom:28px}
+.sec-head h2{margin:0}
+.sec-head .lead{margin:0}
+.sec .lead{font-size:clamp(16px,1.25vw,20px);margin:0 0 28px}
 .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;margin:0;padding:0;border-top:2px solid var(--line)}
 .steps li{padding:18px 20px 22px;border-right:2px solid var(--line)}
 .steps li:last-child{border-right:0}
@@ -189,7 +219,7 @@ sup a{text-decoration:none;font-family:var(--mono);font-size:11px;padding:0 2px;
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:2px solid var(--line)}
 .two > div{padding:22px 24px 0 0}
 .two > div + div{padding-left:24px;border-left:2px solid var(--line)}
-.two p{margin:0 0 14px;max-width:62ch}
+.two p{margin:0 0 14px}
 .cal{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13.5px;font-variant-numeric:tabular-nums;margin:0 0 14px}
 .cal th,.cal td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);text-align:left}
 .cal th{color:var(--dim);font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
@@ -202,23 +232,83 @@ ol.src li{counter-increment:src;padding:10px 0 10px 44px;border-bottom:1px solid
 ol.src li::before{content:"[" counter(src) "]";position:absolute;left:0;font-family:var(--mono);font-weight:700}
 footer{padding:28px 28px 44px}
 footer .lbl{color:var(--dim)}
-footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-weight:800;font-size:clamp(20px,2.4vw,30px);line-height:1.15;margin:12px 0 18px;max-width:46ch}
+footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-weight:800;font-size:clamp(20px,2.4vw,34px);line-height:1.15;margin:12px 0 18px}
 
+.xsec{border-top:2px solid var(--vl2)}
+.xs-in{display:grid;grid-template-columns:minmax(0,1fr) 300px}
+.xs-in svg{display:block;width:100%;height:auto;padding:10px 14px}
+.xs-in svg text{font-family:var(--mono);font-size:12px;fill:var(--ash)}
+.xs-note{border-left:2px solid var(--vl2);padding:16px 18px;font-size:14.5px;line-height:1.5;color:var(--bone)}
+.xs-note p{margin:0 0 10px}
+.xs-note .lbl{color:var(--ash)}
+.tryit{border:2px solid var(--line);margin-top:28px}
+.tryit .mod{border-bottom:2px solid var(--line)}
+.sliders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.sliders label{display:block;padding:16px 18px;border-right:2px solid var(--line)}
+.sliders label:last-child{border-right:0}
+.sliders .lbl{color:var(--dim);display:block}
+.sliders output{display:block;font-family:var(--mono);font-weight:700;font-size:26px;margin:4px 0 8px}
+.sliders input{width:100%;accent-color:var(--heat)}
+.sliders small{display:block;font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+.tryrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 18px;border-top:2px solid var(--line)}
+.tbtn{border:2px solid var(--fg);background:var(--fg);color:var(--bg);padding:8px 16px;font-family:var(--mono);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em;box-shadow:4px 4px 0 var(--heat)}
+.tbtn.ghost{background:transparent;color:var(--fg);box-shadow:none}
+.tbtn:active{transform:translate(4px,4px);box-shadow:none}
+.trystate{font-family:var(--mono);font-size:12.5px;flex:1;min-width:220px}
+.trystate.changed{color:var(--heat)}
+.matrix{width:100%;border-collapse:collapse;font-family:var(--mono);font-variant-numeric:tabular-nums;margin-top:8px}
+.matrix th{font-size:11.5px;font-weight:500;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;padding:8px 6px;text-align:center;border-bottom:2px solid var(--line)}
+.matrix th:first-child{text-align:left}
+.matrix th.cur{color:var(--fg);font-weight:700}
+.matrix td{padding:0;border-bottom:1px solid var(--line);text-align:center;height:44px}
+.matrix td:first-child{text-align:left;font-size:14px;padding-right:8px;white-space:nowrap}
+.matrix td.c{font-weight:700;font-size:16px;color:#000;position:relative}
+.matrix td.c.pending{color:var(--dim);font-weight:400}
+.matrix td.c.me{outline:3px solid var(--fg);outline-offset:-3px}
+.matrix tr.cur td:first-child{font-weight:700}
+.mcap{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:10px 0 0;line-height:1.5}
+.sens-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.sens-grid > .tscroll{padding:6px 18px 14px}
+.sens-t{border-top:0}
+.sens-t td.n{font-size:18px}
+.sens-t .hbar{min-width:90px}
+.sens-t tr:first-child td{background:transparent}
+.sens-t tr.cal-row td{background:var(--soft)}
+.tag{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--fg);color:var(--bg);padding:1px 5px;margin-left:6px;vertical-align:2px}
+.sens-find{border-left:2px solid var(--line);display:flex;flex-direction:column}
+.sens-find > div{padding:14px 18px;border-bottom:2px solid var(--line)}
+.sens-find > div:last-child{border-bottom:0}
+.sens-find .lbl{color:var(--dim)}
+.sens-find p{margin:4px 0 0;font-size:15px;line-height:1.45}
+.sens-find .warn{background:var(--heat);color:#000;flex:1}
+.sens-find .warn .lbl{color:#000}
 @media (max-width: 1100px){
+  .xs-in{grid-template-columns:1fr}
+  .xs-note{border-left:0;border-top:2px solid var(--vl2)}
   .stage-in{grid-template-columns:1fr}
   .mapcol{border-right:0;border-bottom:2px solid var(--vl2)}
+  .panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .p-head,.status,.ticker{grid-column:1 / -1}
+  .readout{grid-column:1;grid-row:2}
+  .cmp{grid-column:1;grid-row:3 / span 2;align-self:start}
+  .assume{grid-column:2;grid-row:2 / span 2;border-left:2px solid var(--vl2)}
+  .chartbox{grid-column:2;grid-row:4;border-left:2px solid var(--vl2)}
+  .status{grid-row:5}
+  .ticker{grid-row:6}
   .hero{grid-template-columns:1fr}
-  .hero-main{border-right:0;border-bottom:2px solid var(--line)}
+  .hero-main{border-right:0;border-bottom:2px solid var(--line);min-height:480px}
 }
 @media (max-width: 760px){
   body{font-size:16px}
   .top{grid-template-columns:auto 1fr}
   .top a,.top .off{display:none}
-  .facts,.steps,.two{grid-template-columns:1fr}
+  .facts,.steps,.two,.sec-head{grid-template-columns:1fr}
   .facts > div,.steps li{border-right:0;border-bottom:2px solid var(--line)}
   .facts > div:last-child,.steps li:last-child{border-bottom:0}
   .two > div + div{padding-left:0;border-left:0;border-top:2px solid var(--line);margin-top:10px}
   .hero-main,.sec-body{padding-left:16px;padding-right:16px}
+  .hero-main h1,.hero-main .deck{max-width:none}
+  .hero-main{background-size:auto 100%,auto,cover !important;background-position:0 0,0 0,60% 40% !important;padding-top:64px}
   .mapcol{padding:12px 10px}
   .zl,.coord,.note.est .txt,.side-lbl .long,.mod .hide-s{display:none}
   .side-lbl{top:10px}.side-lbl.l{left:10px}.side-lbl.r{right:10px}
@@ -226,6 +316,13 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
   .ticks .tick:nth-child(2),.ticks .tick:nth-child(5),.tick.ev{font-size:0}
   .tick.ev{width:8px;height:8px;padding:0}
   .readout .big{font-size:42px}
+  .panel{display:flex}
+  .assume,.chartbox{border-left:0}
+  .sliders{grid-template-columns:1fr}
+  .sens-grid{grid-template-columns:1fr}
+  .sens-find{border-left:0;border-top:2px solid var(--line)}
+  
+  .sliders label{border-right:0;border-bottom:2px solid var(--line)}
   .impact td:nth-child(3),.impact td:nth-child(5),.impact th:nth-child(3),.impact th:nth-child(5){display:none}
 }
 @media (prefers-reduced-motion: reduce){ .note{transition:none} }
@@ -246,6 +343,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
 <div class="hero">
   <div class="hero-main">
     <h1>Burned homes kept drawing water.<span class="burn">The hydrants ran dry.</span></h1>
+    <span class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Palisades_Fire_(54253581167).jpg">CAL FIRE, Jan 2025</a> / public domain</span>
     <p class="deck">On the first night of the Palisades Fire, thousands of destroyed houses left their water lines open while firefighters needed every gallon. Replay those 24 hours on real data, then see what changes when each open line shuts itself off.</p>
   </div>
   <dl class="incident" style="margin:0">
@@ -264,7 +362,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
 </div>
 
 <section class="stage" id="replay" aria-label="Interactive replay of the first 24 hours">
-  <div class="mod"><div class="no">02</div><div class="grow">Replay / first 24 hours / Pacific Palisades</div><div class="hide-s">Model <span class="chip" style="margin-left:8px">Calibrated</span></div></div>
+  <div class="mod"><div class="no">02</div><div class="grow">Replay / first 24 hours / Pacific Palisades</div><div class="hide-s">Model <span class="chip" id="modelChip" style="margin-left:8px">Calibrated</span></div></div>
   <div class="stage-in">
     <div class="mapcol">
       <div class="bar">
@@ -286,7 +384,8 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
         <div class="side-lbl l">What happened</div>
         <div class="side-lbl r" id="rLbl">With valves<span class="long"> in</span> 100%<span class="long"> of homes</span></div>
         <div class="divider" id="divider"><div class="knob"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6 3 12l6 6M15 6l6 6-6 6" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="square"/></svg></div></div>
-        <input type="range" class="swipe" id="swipe" min="0" max="1000" value="500" aria-label="Compare: drag to move the divider between what happened and the same fire with valves">
+        <input type="range" class="swipe" id="swipe" min="0" max="1000" value="500" aria-label="Compare: move the divider between what happened and the same fire with valves">
+        <div class="hover-tip" id="tip"></div>
         <div class="loading" id="loading">Running water model_</div>
       </div>
       <div class="timeline">
@@ -298,18 +397,23 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
         <span><i class="lg" style="background:var(--n-heat);box-shadow:0 0 8px var(--n-heat)"></i>Burning</span>
         <span><i class="lg" style="background:#1A1A18;outline:2px solid var(--n-signal)"></i>Destroyed, line leaking</span>
         <span><i class="lg" style="background:#1A1A18;outline:2px solid var(--n-lock)"></i>Destroyed, valve closed</span>
-        <span><i class="lg" style="background:var(--n-signal);transform:rotate(45deg) scale(.75)"></i>Hydrant ≥ 20 psi</span>
+        <span><i class="lg" style="background:#6A4A30"></i>Damaged, not destroyed</span>
+        <span><i class="lg" style="background:var(--n-signal);transform:rotate(45deg) scale(.75)"></i>Hydrant ≥ 35 psi</span>
+        <span><i class="lg" style="background:var(--n-warn);transform:rotate(45deg) scale(.75)"></i>Hydrant 20–35 psi</span>
         <span><i class="lg" style="outline:2px solid var(--n-heat);transform:rotate(45deg) scale(.75)"></i>Hydrant &lt; 20 psi</span>
+        <span><i class="lg" style="height:2px;background:rgba(242,242,234,.6)"></i>Contour, 100 ft</span>
+        <span><i class="lg" style="height:0;border-top:2px dashed var(--n-signal)"></i>Zone boundary</span>
       </div>
-      <p class="disclose">Source: structure locations and damage, CAL FIRE. Estimated by our model: burn times, leaks, pressures. Cyan shading marks pressure zones in served areas.</p>
+      <p class="disclose">Real data: structure locations and damage (CAL FIRE), hydrant locations (LADWP, LA County), terrain (USGS). Computed by our model: every pressure, tank level, leak and burn time shown here. Cyan shading marks pressure zones in served areas; dashed cyan lines are the elevations where one zone hands over to the next.</p>
     </div>
 
     <aside class="panel" aria-label="Side by side readings">
       <div class="p-head">
-        <span class="lbl" id="repSub">Marquez Knolls zone / 958 ft / estimated</span>
+        <span class="lbl" id="repSub">Zone 1137 (Marquez Knolls tank) / 958 ft</span>
         <h2 id="repName">Hydrant, Lachman Ln</h2>
+        <div class="picks" id="picks"><span class="lbl">Zone</span></div>
       </div>
-      <div class="readout">
+      <div class="readout" title="Pressures are computed by the model; no hydrant had a sensor during the fire.">
         <div><span class="lbl">What happened</span><div class="big" id="psiA">–</div></div>
         <div><span class="lbl b" id="colB">With valves</span><div class="big" id="psiB">–</div></div>
       </div>
@@ -324,18 +428,35 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
           <tr><td>Temescal tank</td><td><span class="gauge"><i id="t4A"></i></span></td><td><span class="gauge"><i id="t4B"></i></span></td></tr>
         </tbody>
       </table>
+      <div class="assume" id="assume">
+        <div class="a-head"><span class="lbl">Model assumptions</span><span class="a-state" id="tryState">Calibrated</span><button class="mini" id="resetP">Reset</button></div>
+        <label><span>Leak / destroyed home</span><output id="oLeak">4 gpm</output><input type="range" id="sLeak" min="1" max="12" step="1" value="4" aria-label="Leak from one destroyed home, gallons per minute"></label>
+        <label><span>Firefighting demand</span><output id="oFire">100%</output><input type="range" id="sFire" min="50" max="150" step="10" value="100" aria-label="Firefighting demand, percent of calibrated"></label>
+        <label><span>Pump capacity</span><output id="oPump">100%</output><input type="range" id="sPump" min="50" max="150" step="10" value="100" aria-label="Pump capacity, percent of calibrated"></label>
+      </div>
       <div class="status" id="status" aria-live="polite">Standing by</div>
       <div class="chartbox"><svg class="chart" id="chart" viewBox="0 0 336 170" aria-label="Pressure at the highlighted hydrant over 24 hours, both scenarios"></svg></div>
       <div class="ticker" id="ticker"><span class="lbl">Reported</span><div id="tickTxt">Press Play to replay the first 24 hours.</div><div class="src" id="tickSrc"></div></div>
     </aside>
   </div>
+  <div class="xsec">
+    <div class="mod"><div class="no">03</div><div class="grow">Why hydrants go dry / hillside cross-section</div><div class="hide-s">Heights to scale</div></div>
+    <div class="xs-in">
+      <svg id="xs" viewBox="0 0 1000 340" role="img" aria-label="Hillside cross-section. Each pressure zone has a water level set by its tank; a hydrant has pressure only while the water level is above it."></svg>
+      <div class="xs-note">
+        <p><span class="lbl">How to read it</span><br>Each zone's water level is set by its tank. A hydrant's pressure is how far that level sits above it: every 2.3 ft of height is 1 psi.</p>
+        <p>When a tank empties, the level drops. Once it falls below a hydrant, that hydrant is dry.</p>
+        <p id="xsLive" style="color:var(--n-warn)"></p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="sec" id="how">
-  <div class="mod"><div class="no">03</div><div class="grow">Mechanism</div></div>
+  <div class="mod"><div class="no">04</div><div class="grow">Mechanism</div></div>
   <div class="sec-body">
-    <h2>A valve that closes when the house is gone</h2>
-    <p class="lead">Firefighters can't shut off thousands of water lines in the middle of a firestorm. The house has to do it for them.</p>
+    <div class="sec-head"><h2>A valve that closes when the house is gone</h2>
+    <p class="lead">Firefighters can't shut off thousands of water lines in the middle of a firestorm. The house has to do it for them.</p></div>
     <ol class="steps">
       <li>
         <span class="lbl">Step 1 / Sense</span>
@@ -360,10 +481,10 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
 </section>
 
 <section class="sec" id="impact">
-  <div class="mod"><div class="no">04</div><div class="grow">Adoption vs. outcome</div></div>
+  <div class="mod"><div class="no">05</div><div class="grow">Adoption vs. outcome</div></div>
   <div class="sec-body">
-    <h2>More valves, and the hydrants come back</h2>
-    <p class="lead">The same 24 hours, run again with a different share of homes fitted with a valve. In the model, firefighting alone empties the first two tanks either way. What the valves change is the long night after: with the leaks gone, the pumps catch up and hydrants get their pressure back. Numbers cover the mapped area.</p>
+    <div class="sec-head"><h2>More valves, and the hydrants come back</h2>
+    <p class="lead">The same 24 hours, run again with a different share of homes fitted with a valve. In the model, firefighting alone empties the first two tanks either way. What the valves change is the long night after: with the leaks gone, the pumps catch up and hydrants get their pressure back. Numbers cover the mapped area.</p></div>
     <div class="tscroll">
     <table class="impact" id="impactTable">
       <thead><tr><th>Homes with a valve</th><th>Hydrants &lt; 20 psi next morning</th><th></th><th>Lost to leaks, 24 h</th><th></th></tr></thead>
@@ -374,7 +495,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
 </section>
 
 <section class="sec" id="method">
-  <div class="mod"><div class="no">05</div><div class="grow">Model / data / limits</div></div>
+  <div class="mod"><div class="no">06</div><div class="grow">Model / data / limits</div></div>
   <div class="sec-body">
     <h2>How we built this</h2>
     <div class="two">
@@ -394,11 +515,26 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
         </details>
       </div>
     </div>
+    <p class="sens-link">Try other values for the three biggest assumptions with the controls next to the map. <a href="#replay">Back to the replay</a></p>
+    <div class="tryit sens">
+      <div class="mod"><div class="no">06.1</div><div class="grow">Sensitivity / leak rate x homes with a valve</div><div class="hide-s" id="sensHdr">Fire 100% / pumps 100%</div></div>
+      <div class="sens-grid">
+        <div class="tscroll">
+          <table class="matrix" id="sensT" aria-describedby="sensCap"></table>
+          <p class="mcap" id="sensCap">Share of hydrants below 20 psi the next morning (10:30 AM, Jan 8). Rows: leak from one destroyed home. Columns: share of homes with a valve. Uses your current firefighting and pump settings; outlined cell = your current leak setting and the valve share selected in the replay.</p>
+        </div>
+        <div class="sens-find">
+          <div><span class="lbl">All homes fitted</span><p id="sensF1">Computing…</p></div>
+          <div><span class="lbl">Partial adoption</span><p id="sensF2">Computing…</p></div>
+          <div class="warn"><span class="lbl">The number to pin down</span><p id="sensF3">Computing…</p></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <section class="sec">
-  <div class="mod"><div class="no">06</div><div class="grow">Sources</div></div>
+  <div class="mod"><div class="no">07</div><div class="grow">Sources</div></div>
   <div class="sec-body">
     <ol class="src">
       <li id="s1">Mayor Karen Bass and LADWP, Jan 8, 2025, as reported in <a href="https://www.yahoo.com/news/fact-check-yes-la-fire-223100748.html">this fact check</a>; LADWP statement via <a href="https://www.foxla.com/news/palisades-fire-dwp-sued-water-availability">FOX 11</a>.</li>
@@ -407,6 +543,7 @@ footer .prompt{font-family:var(--disp);font-variation-settings:"wdth" 112;font-w
       <li id="s4">How burned homes drain the system, the 37,000 gpm trunk limit and the 6:30 PM low-pressure reports: <a href="https://resources.ca.gov/-/media/CNRA-Website/Files/NewsRoom/Educational-Portal/19Nov2025PalisadesFireWaterSupply.pdf">California Natural Resources Agency memo</a> (Nov 2025).</li>
       <li id="s5">Structures and damage: <a href="https://gis.data.ca.gov/datasets/CALFIRE-Forestry::dins-2025-palisades-public-view">CAL FIRE DINS, 2025 Palisades</a>. Fire progression: CAL FIRE Incident Management Team 2 progression map, with the band-date correction noted by <a href="https://the-lookout.org/?p=6082">The Lookout</a>.</li>
       <li id="s6">Hydrants: <a href="https://geohub.lacity.org/datasets/fire-hydrants-dwp">LADWP Fire Hydrants (LA GeoHub)</a> and LA County Fire hydrants. Terrain: USGS 3DEP 1/3 arc-second elevation.</li>
+      <li id="s7">Header photo: homes burning along the coast during the Palisades Fire, CAL FIRE, January 2025, via <a href="https://commons.wikimedia.org/wiki/File:Palisades_Fire_(54253581167).jpg">Wikimedia Commons</a> (marked public domain).</li>
     </ol>
   </div>
 </section>
@@ -431,10 +568,12 @@ const DATA = /*__DATA__*/null;
   const W = DATA.window.width, H = DATA.window.height, Z = DATA.zones.length;
   const houses = { n: DATA.houses.n, x: dec(DATA.houses.x, Uint16Array), y: dec(DATA.houses.y, Uint16Array), elev: dec(DATA.houses.elev, Uint16Array), zone: dec(DATA.houses.zone, Uint8Array), dmg: dec(DATA.houses.dmg, Uint8Array), arr: dec(DATA.houses.arr, Uint16Array) };
   const hyd = { n: DATA.hydrants.n, x: dec(DATA.hydrants.x, Uint16Array), y: dec(DATA.hydrants.y, Uint16Array), elev: dec(DATA.hydrants.elev, Uint16Array), zone: dec(DATA.hydrants.zone, Uint8Array) };
-  const P = FNSim.PARAMS, STEPS = P.steps, DT = P.dtMin, REP = DATA.rep.index;
+  const P = FNSim.PARAMS, STEPS = P.steps, DT = P.dtMin;
+  let REP = DATA.rep.index;
   const prep = FNSim.prepare({ zones: DATA.zones, houses });
   const LEVELS = [0, 0.25, 0.5, 0.75, 1];
   const runs = {};
+  let OVR = {};
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ---------- time helpers ----------
@@ -484,7 +623,36 @@ const DATA = /*__DATA__*/null;
   function resize() {
     const cssW = $("mapbox").clientWidth, dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssW * dpr * H / W);
-    scale = canvas.width / W; buildSprites(); placeOverlay(); draw();
+    scale = canvas.width / W; buildSprites(); buildContours(); placeOverlay(); draw();
+  }
+
+  let contourLayer = null;
+  function buildContours() {
+    const c = document.createElement("canvas"); c.width = canvas.width; c.height = canvas.height;
+    const g = c.getContext("2d"), k = scale, B = new Set(DATA.boundaries);
+    const labelled = {};
+    g.lineJoin = "round";
+    for (const [lv, pts] of DATA.contours) {
+      const isB = B.has(lv), major = lv % 500 === 0;
+      g.beginPath();
+      for (let i = 0; i < pts.length; i += 2) { const x = pts[i] * k, y = pts[i + 1] * k; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+      if (isB) { g.strokeStyle = "rgba(41,227,255,.75)"; g.lineWidth = 1.4 * k; g.setLineDash([5 * k, 4 * k]); }
+      else if (major) { g.strokeStyle = "rgba(242,242,234,.5)"; g.lineWidth = 1.1 * k; g.setLineDash([]); }
+      else { g.strokeStyle = "rgba(242,242,234,.2)"; g.lineWidth = 0.7 * k; g.setLineDash([]); }
+      g.stroke();
+      if ((major || isB) && pts.length >= 60 && (labelled[lv] || 0) < 2) {
+        const j = Math.floor(pts.length / 4) * 2, x = pts[j] * k, y = pts[j + 1] * k;
+        if (x > 60 * k && x < (W - 60) * k && y > 40 * k && y < (H - 30) * k) {
+          labelled[lv] = (labelled[lv] || 0) + 1;
+          const txt = lv + " ft"; g.setLineDash([]);
+          g.font = `700 ${Math.round(10 * k)}px "JetBrains Mono", monospace`;
+          const w = g.measureText(txt).width + 6 * k;
+          g.fillStyle = "#000"; g.fillRect(x - w / 2, y - 7 * k, w, 14 * k);
+          g.fillStyle = isB ? "#29E3FF" : "rgba(242,242,234,.8)"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(txt, x, y + 0.5 * k);
+        }
+      }
+    }
+    contourLayer = c;
   }
 
   // ---------- state ----------
@@ -504,6 +672,7 @@ const DATA = /*__DATA__*/null;
       }
       ctx.globalAlpha = 1;
     }
+    if (contourLayer) ctx.drawImage(contourLayer, 0, 0);
     const s = scale / 4, n = houses.n, X = houses.x, Y = houses.y, ARR = houses.arr, DMG = houses.dmg, ZN = houses.zone, EL = houses.elev;
     const pulse = reduced ? 1 : 0.55 + 0.45 * Math.sin(tPulse);
     const burning = [];
@@ -564,8 +733,8 @@ const DATA = /*__DATA__*/null;
     for (let la = Math.ceil(win.lat0 * 100) / 100; la < win.lat1 - 0.004; la += 0.01) { const e = document.createElement("div"); e.className = "coord"; e.style.cssText = `top:${((win.lat1 - la) / (win.lat1 - win.lat0) * 100).toFixed(2)}%;left:4px;transform:translateY(-120%)`; e.textContent = la.toFixed(2) + "N"; o.appendChild(e); }
     const ig = document.createElement("div"); ig.className = "note"; ig.id = "igNote"; ig.style.cssText = pct(DATA.ignition[0], DATA.ignition[1]);
     ig.innerHTML = '<span class="pin"></span><span class="txt">Ignition 10:30</span>'; o.appendChild(ig);
-    const rp = document.createElement("div"); rp.className = "note est"; rp.style.cssText = pct(hyd.x[REP] / 4, hyd.y[REP] / 4);
-    rp.innerHTML = `<span class="txt" style="left:16px;top:8px">${DATA.rep.label} / est.</span>`; o.appendChild(rp);
+    const rp = document.createElement("div"); rp.className = "note est"; rp.id = "repNote"; rp.style.cssText = pct(hyd.x[REP] / 4, hyd.y[REP] / 4);
+    rp.innerHTML = `<span class="txt" style="left:16px;top:8px">${hydName(REP)}</span>`; o.appendChild(rp);
   }
 
   // ---------- panel ----------
@@ -631,7 +800,113 @@ const DATA = /*__DATA__*/null;
     render();
     if (frame >= STEPS) stop(true);
   }
-  function render() { draw(); updatePanel(); }
+  // ---------- hillside cross-section ----------
+  const XS = { x: [40, 230, 400, 600, 760, 940], ground: [0, 429, 620, 1037, 1245, 1640] };
+  const xsY = e => 282 - Math.max(0, e) * 0.125;
+  const tankName = { 2: "Marquez Knolls", 3: "Trailer", 4: "Temescal" };
+  function groundX(elev) { for (let z = 0; z < 5; z++) if (elev <= XS.ground[z + 1]) return XS.x[z] + (XS.x[z + 1] - XS.x[z]) * (elev - XS.ground[z]) / (XS.ground[z + 1] - XS.ground[z]); return XS.x[5]; }
+  function openPerZone(f, withValves) {
+    const out = [0, 0, 0, 0, 0], t = f * DT;
+    for (let i = 0; i < houses.n; i++) {
+      const a = houses.arr[i];
+      if (houses.dmg[i] === 4 && a !== 65535 && t >= a + P.openDelayMin && !(withValves && FNSim.hash01(i) < adoption)) out[houses.zone[i]]++;
+    }
+    return out;
+  }
+  function drawXS() {
+    const a = A(), b = B(), f = frame, G = DATA.zones;
+    let s = "";
+    let gpath = `M${XS.x[0]} ${xsY(0)}`; for (let z = 1; z < 6; z++) gpath += ` L${XS.x[z]} ${xsY(XS.ground[z])}`;
+    s += `<path d="${gpath} L${XS.x[5]} 286 L${XS.x[0]} 286 Z" fill="#1C1C1A"/><path d="${gpath}" fill="none" stroke="#8C8C85" stroke-width="2"/>`;
+    [0, 500, 1000, 1500].forEach(e => { s += `<line x1="30" x2="950" y1="${xsY(e)}" y2="${xsY(e)}" stroke="#2E2E2B" stroke-dasharray="2 4"/><text x="966" y="${xsY(e) + 4}">${e}</text>`; });
+    s += `<text x="966" y="${xsY(1640) - 12}">ft</text>`;
+    const oa = openPerZone(f, false), ob = openPerZone(f, true);
+    for (let z = 0; z < 5; z++) {
+      const x0 = XS.x[z], x1 = XS.x[z + 1], ha = headAt(a, f, z), hb = headAt(b, f, z), lo = XS.ground[z];
+      const ya = xsY(Math.max(lo, ha)), yb = xsY(Math.max(lo, hb)), yg = xsY(G[z]);
+      s += `<line x1="${x0}" x2="${x1}" y1="${yg}" y2="${yg}" stroke="#29E3FF" stroke-opacity=".25" stroke-dasharray="3 3"/>`;
+      s += `<line x1="${x0}" x2="${x1}" y1="${yb}" y2="${yb}" stroke="#C6FF3D" stroke-width="3"/>`;
+      s += `<line x1="${x0}" x2="${x1}" y1="${ya}" y2="${ya}" stroke="#FF4A1C" stroke-width="3" stroke-dasharray="${Math.abs(ya - yb) < 2 ? "8 6" : ""}"/>`;
+      s += `<text x="${(x0 + x1) / 2}" y="${yg - 8}" text-anchor="middle" style="fill:#29E3FF">ZONE ${G[z]}</text>`;
+      s += `<text x="${(x0 + x1) / 2}" y="304" text-anchor="middle"><tspan style="fill:#FF4A1C">${oa[z].toLocaleString("en-US")}</tspan> / <tspan style="fill:#C6FF3D">${ob[z].toLocaleString("en-US")}</tspan></text>`;
+      if (z >= 2) {
+        const tx = x1 - 36, ty = yg - 64, fa = tankAt(a, f, z), fb = tankAt(b, f, z);
+        s += `<rect x="${tx}" y="${ty}" width="30" height="40" fill="none" stroke="#8C8C85" stroke-width="1.5"/>`;
+        s += `<rect x="${tx + 3}" y="${ty + 3 + 34 * (1 - fa)}" width="11" height="${34 * fa}" fill="#FF4A1C"/><rect x="${tx + 16}" y="${ty + 3 + 34 * (1 - fb)}" width="11" height="${34 * fb}" fill="#C6FF3D"/>`;
+        s += `<text x="${tx - 6}" y="${ty + 12}" text-anchor="end">${tankName[z].toUpperCase()}</text><text x="${tx - 6}" y="${ty + 26}" text-anchor="end">TANK</text>`;
+        const pa = f > 0 ? (a.pumps[f - 1] >> (z - 2)) & 1 : 1, pb = f > 0 ? (b.pumps[f - 1] >> (z - 2)) & 1 : 1;
+        s += `<path d="M${x0 + 8} ${xsY(XS.ground[z]) + 14} v-28 l-5 7 m5 -7 l5 7" fill="none" stroke="#FF4A1C" stroke-width="2" opacity="${pa ? 1 : .15}"/>`;
+        s += `<path d="M${x0 + 20} ${xsY(XS.ground[z]) + 14} v-28 l-5 7 m5 -7 l5 7" fill="none" stroke="#C6FF3D" stroke-width="2" opacity="${pb ? 1 : .15}"/>`;
+      }
+    }
+    const re = hyd.elev[REP], rz = hyd.zone[REP], rx = groundX(re), ry = xsY(re);
+    const la = xsY(Math.max(re, headAt(a, f, rz))), lb = xsY(Math.max(re, headAt(b, f, rz)));
+    s += `<line x1="${rx - 5}" x2="${rx - 5}" y1="${ry}" y2="${la}" stroke="#FF4A1C" stroke-width="4"/><line x1="${rx + 5}" x2="${rx + 5}" y1="${ry}" y2="${lb}" stroke="#C6FF3D" stroke-width="4"/>`;
+    s += `<rect x="${rx - 6}" y="${ry - 6}" width="12" height="12" fill="#000" stroke="#F2F2EA" stroke-width="2"/>`;
+    s += `<text x="${rx + 12}" y="${ry + 22}" style="fill:#F2F2EA">${hydName(REP).toUpperCase()}</text>`;
+    s += `<text x="40" y="332"><tspan style="fill:#FF4A1C">■ ACTUAL</tspan>  <tspan style="fill:#C6FF3D">■ WITH VALVES</tspan>  <tspan>WATER LEVEL / TANK / ↑ PUMP RUNNING / NUMBERS: OPEN LEAKS IN ZONE</tspan></text>`;
+    $("xs").innerHTML = s;
+    const pa = psi(a, f, rz, re), pb = psi(b, f, rz, re);
+    $("xsLive").textContent = f === 0 ? "" : pa < 20 && pb >= 20 ? `Now: the ${hydName(REP)} hydrant is above the actual water level, but still below it with valves.` : pa < 20 && pb < 20 ? `Now: the ${hydName(REP)} hydrant is above the water level in both runs.` : "";
+  }
+
+  // ---------- hydrant selection ----------
+  const ZONE_NOTE = ["coastal, fed from the trunk", "fed from the trunk", "Marquez Knolls tank", "Trailer tank", "Temescal tank"];
+  function hydName(j) { const l = DATA.hydLabels[j]; return l ? l : "Hydrant " + (DATA.hydIds[j] || j); }
+  function setHeader() {
+    const z = hyd.zone[REP], G = DATA.zones[z], id = DATA.hydIds[REP];
+    $("repName").textContent = `Hydrant, ${hydName(REP)}`;
+    $("repSub").textContent = `Zone ${G} (${ZONE_NOTE[z]}) / ${hyd.elev[REP]} ft${id ? " / #" + id : ""}`;
+    document.querySelectorAll("#picks button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.h === REP));
+  }
+  function buildPicks() {
+    const box = $("picks");
+    DATA.presets.forEach(j => { const b = document.createElement("button"); b.dataset.h = j; b.textContent = DATA.zones[hyd.zone[j]]; b.title = hydName(j); b.onclick = () => selectHydrant(j); box.appendChild(b); });
+    const s = document.createElement("small"); s.textContent = "or click any hydrant on the map"; box.appendChild(s);
+  }
+  function selectHydrant(j) {
+    REP = j; setHeader();
+    const n = $("repNote"); if (n) { n.style.left = (hyd.x[j] / 4 / W * 100).toFixed(2) + "%"; n.style.top = (hyd.y[j] / 4 / H * 100).toFixed(2) + "%"; n.querySelector(".txt").textContent = hydName(j); }
+    render();
+  }
+  function nearestHydrant(mx, my, maxPx) { // mx,my in CSS px inside the map box
+    const k = $("mapbox").clientWidth / W; let best = -1, bd = maxPx * maxPx;
+    for (let j = 0; j < hyd.n; j++) { const dx = hyd.x[j] / 4 * k - mx, dy = hyd.y[j] / 4 * k - my, d = dx * dx + dy * dy; if (d < bd) { bd = d; best = j; } }
+    return best;
+  }
+  (function mapPointer() {
+    const box = $("mapbox"), tip = $("tip");
+    let drag = false, downX = 0, downY = 0, moved = false;
+    const local = e => { const r = box.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top, r.width]; };
+    const nearDiv = (x, w) => Math.abs(x - split * w) < 18;
+    box.addEventListener("pointerdown", e => {
+      const [x, y, w] = local(e); downX = x; downY = y; moved = false;
+      if (nearDiv(x, w)) { drag = true; box.setPointerCapture(e.pointerId); e.preventDefault(); }
+    });
+    box.addEventListener("pointermove", e => {
+      const [x, y, w] = local(e);
+      if (Math.abs(x - downX) + Math.abs(y - downY) > 4) moved = true;
+      if (drag) { split = Math.max(0, Math.min(1, x / w)); $("swipe").value = Math.round(split * 1000); draw(); tip.style.display = "none"; return; }
+      if (e.pointerType !== "mouse" || !ready) return;
+      const j = nearestHydrant(x, y, 10), near = nearDiv(x, w);
+      box.classList.toggle("near-div", near); box.classList.toggle("near-hyd", !near && j >= 0);
+      if (j >= 0 && !near) {
+        const withV = x > split * w, r = withV ? B() : A(), p = Math.round(psi(r, frame, hyd.zone[j], hyd.elev[j]));
+        tip.innerHTML = `${hydName(j)} / zone ${DATA.zones[hyd.zone[j]]} / ${withV ? "<i>" + p + " psi</i>" : "<b>" + p + " psi</b>"}`;
+        tip.style.left = x + "px"; tip.style.top = y + "px"; tip.style.display = "block";
+      } else tip.style.display = "none";
+    });
+    box.addEventListener("pointerleave", () => { tip.style.display = "none"; });
+    box.addEventListener("pointerup", e => {
+      const [x, y] = local(e);
+      if (drag) { drag = false; return; }
+      if (moved || !ready) return;
+      const j = nearestHydrant(x, y, e.pointerType === "mouse" ? 10 : 18);
+      if (j >= 0) selectHydrant(j);
+    });
+  })();
+
+  function render() { draw(); updatePanel(); drawXS(); }
   function start() { if (frame >= STEPS) frame = 0; playing = true; $("play").textContent = "Pause"; schedule(); }
   function stop(done) { playing = false; clearInterval(timer); timer = null; $("play").textContent = done ? "Replay" : "Play"; }
   function schedule() { clearInterval(timer); timer = setInterval(tick, 110 / speed); }
@@ -640,9 +915,10 @@ const DATA = /*__DATA__*/null;
   document.querySelectorAll("[data-sp]").forEach(b => b.onclick = () => { speed = +b.dataset.sp; document.querySelectorAll("[data-sp]").forEach(x => x.setAttribute("aria-pressed", x === b)); if (playing) schedule(); });
   document.querySelectorAll("[data-ad]").forEach(b => b.onclick = () => {
     adoption = +b.dataset.ad; document.querySelectorAll("[data-ad]").forEach(x => x.setAttribute("aria-pressed", x === b));
-    $("rLbl").innerHTML = `With valves<span class="long"> in</span> ${Math.round(adoption * 100)}%<span class="long"> of homes</span>`; $("colB").textContent = `With valves / ${Math.round(adoption * 100)}%`; render();
+    $("rLbl").innerHTML = `With valves<span class="long"> in</span> ${Math.round(adoption * 100)}%<span class="long"> of homes</span>`; $("colB").textContent = `With valves / ${Math.round(adoption * 100)}%`; render(); if (typeof drawSens === "function") drawSens();
   });
   $("swipe").oninput = e => { split = e.target.value / 1000; draw(); };
+  $("swipe").style.pointerEvents = "none";
   window.addEventListener("resize", () => { clearTimeout(resize.t); resize.t = setTimeout(resize, 120); });
   (function anim() { if (!reduced && ready) { tPulse += 0.18; if (!playing && frame > 0) draw(); } requestAnimationFrame(anim); })();
 
@@ -654,6 +930,7 @@ const DATA = /*__DATA__*/null;
       <td class="n">${Math.round(100 * r.low / hyd.n)}%</td><td><div class="hbar"><i style="width:${100 * r.low / maxLow}%;background:var(--heat)"></i></div></td>
       <td class="n">${(r.lost / 1e6).toFixed(1)}M gal</td><td><div class="hbar"><i style="width:${100 * r.lost / maxLost}%;background:var(--signal)"></i></div></td></tr>`).join("");
   }
+  const EP = () => Object.assign({}, P, OVR);
   function fillCalibration() {
     const r = runs[0], firstEmpty = z => { for (let k = 0; k < STEPS; k++) if (r.tank[k * Z + z] < 0.01) return (k + 1) * DT; return null; };
     const lowAt = f => Math.round(100 * lowCount(r, f) / hyd.n);
@@ -666,12 +943,13 @@ const DATA = /*__DATA__*/null;
       ["Hydrants below 20 psi at 18:30", "First reports", lowAt(96) + "%"],
     ];
     $("calTable").querySelector("tbody").innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+    const Q = EP();
     const pr = [
-      ["Leak from one open line at 60 psi", P.leakGpm + " gpm (assumption, calibrated)"],
+      ["Leak from one open line at 60 psi", Q.leakGpm + " gpm (assumption" + (OVR.leakGpm ? ", changed by you)" : ", calibrated)")],
       ["Line fails open after fire arrives", P.openDelayMin + " min"],
-      ["Engine draw per burning structure", P.firePerBurningGpm + " gpm"],
-      ["Engines defending each hillside zone", P.defenseGpm.slice(2).join(" / ") + " gpm for " + P.defenseMin / 60 + " h"],
-      ["Pump capacity into 1137 / 1345 / 1645 zones", P.pumpGpm.slice(2).join(" / ") + " gpm"],
+      ["Engine draw per burning structure", Math.round(Q.firePerBurningGpm) + " gpm"],
+      ["Engines defending each hillside zone", Q.defenseGpm.slice(2).map(Math.round).join(" / ") + " gpm for " + Q.defenseMin / 60 + " h"],
+      ["Pump capacity into 1137 / 1345 / 1645 zones", Q.pumpGpm.slice(2).map(Math.round).join(" / ") + " gpm"],
       ["Pumps stop / reach full flow at intake pressure", P.pumpMinSuctionPsi + " / " + P.pumpRestartPsi + " psi"],
       ["Tank capacity (LADWP)", P.tankGal.slice(2).map(v => (v / 1e6).toFixed(2)).join(" / ") + " million gal"],
       ["Time step", P.dtMin + " min"],
@@ -679,9 +957,68 @@ const DATA = /*__DATA__*/null;
     $("params").innerHTML = pr.map(p => `<li><b>${p[0]}:</b> ${p[1]}</li>`).join("");
   }
 
+  // ---------- assumption sliders (next to the map) ----------
+  const sL = $("sLeak"), sF = $("sFire"), sPm = $("sPump");
+  const showS = () => { $("oLeak").textContent = sL.value + " gpm"; $("oFire").textContent = sF.value + "%"; $("oPump").textContent = sPm.value + "%"; };
+  function rerun() {
+    showS();
+    const lf = +sL.value, ff = sF.value / 100, pf = sPm.value / 100, changed = lf !== P.leakGpm || ff !== 1 || pf !== 1;
+    OVR = changed ? { leakGpm: lf, firePerBurningGpm: P.firePerBurningGpm * ff, defenseGpm: P.defenseGpm.map(v => v * ff), fireCapGpm: P.fireCapGpm.map(v => v * ff), pumpGpm: P.pumpGpm.map(v => v * pf) } : {};
+    const st = $("tryState"), chip = $("modelChip");
+    st.className = "a-state busy"; st.textContent = "Running";
+    setTimeout(() => {
+      LEVELS.forEach(l => runs[l] = FNSim.run(prep, l, OVR));
+      render(); fillImpact(); fillCalibration(); computeSens();
+      st.className = "a-state" + (changed ? " changed" : ""); st.textContent = changed ? "Custom" : "Calibrated";
+      chip.textContent = changed ? "Custom settings" : "Calibrated"; chip.style.background = changed ? "var(--n-heat)" : "";
+    }, 30);
+  }
+  [sL, sF, sPm].forEach(e => { e.oninput = showS; e.onchange = rerun; });
+  $("resetP").onclick = () => { sL.value = P.leakGpm; sF.value = 100; sPm.value = 100; rerun(); };
+
+  // ---------- sensitivity matrix (live) ----------
+  const SENS_LEAKS = [2, 3, 4, 6, 8, 12], SENS_AD = [0, 0.25, 0.5, 0.75, 1];
+  let sensToken = 0, sensGrid = {};
+  const scaled = leak => { const ff = sF.value / 100, pf = sPm.value / 100; return { leakGpm: leak, firePerBurningGpm: P.firePerBurningGpm * ff, defenseGpm: P.defenseGpm.map(v => v * ff), fireCapGpm: P.fireCapGpm.map(v => v * ff), pumpGpm: P.pumpGpm.map(v => v * pf) }; };
+  function sensRows() { const cur = +sL.value; return [...new Set([...SENS_LEAKS, cur])].sort((a, b) => a - b); }
+  function cellColor(v) { const k = Math.min(1, v / 45); return v <= 5 ? `rgba(198,255,61,${0.35 + 0.4 * (1 - v / 5)})` : `rgba(255,74,28,${0.25 + 0.75 * k})`; }
+  function drawSens() {
+    const rows = sensRows(), cur = +sL.value;
+    $("sensHdr").textContent = `Fire ${sF.value}% / pumps ${sPm.value}%`;
+    let h = `<thead><tr><th>Leak / home</th>${SENS_AD.map(a => `<th class="${a === adoption ? "cur" : ""}">${a === 0 ? "None" : Math.round(a * 100) + "%"}</th>`).join("")}</tr></thead><tbody>`;
+    rows.forEach(l => {
+      h += `<tr class="${l === cur ? "cur" : ""}"><td>${l} gpm${l === P.leakGpm ? ' <span class="tag">calibrated</span>' : ""}</td>`;
+      SENS_AD.forEach(a => { const v = sensGrid[l + ":" + a]; const me = l === cur && a === adoption;
+        h += v === undefined ? `<td class="c pending${me ? " me" : ""}">…</td>` : `<td class="c${me ? " me" : ""}" style="background:${cellColor(v)}">${v}%</td>`; });
+      h += "</tr>";
+    });
+    $("sensT").innerHTML = h + "</tbody>";
+    const full = rows.every(l => SENS_AD.every(a => sensGrid[l + ":" + a] !== undefined));
+    if (!full) return;
+    const at = (l, a) => sensGrid[l + ":" + a];
+    const allRow = rows.map(l => at(l, 1)), lo = Math.min(...allRow), hi = Math.max(...allRow);
+    $("sensF1").textContent = `${lo === hi ? lo + "%" : lo + "–" + hi + "%"} of hydrants stay low at every leak rate. With every destroyed home shut off, no lines stay open, so the leak rate stops mattering by definition; what is left comes from firefighting demand.`;
+    const need = SENS_AD.find(a => a > 0 && at(cur, a) <= at(cur, 1) + 3);
+    $("sensF2").textContent = need === undefined ? `At ${cur} gpm, no partial share gets close to the all-homes result.` : `At ${cur} gpm, about ${Math.round(need * 100)}% of homes need a valve to get within 3 points of the all-homes result (${at(cur, 0)}% with none). The more a home leaks, the more homes need a valve.`;
+    const calibrated = sF.value == 100 && sPm.value == 100;
+    $("sensF3").textContent = calibrated ? "The record (about 20% of hydrants without water) falls between 3 and 4 gpm in this model. Below about 3 gpm, valves change little; above it, adoption decides the outcome. That leak rate is the number to pin down." : "With firefighting or pumps changed, the model is no longer calibrated to the record, so read these as what-ifs. The leak rate is still the number to pin down.";
+  }
+  function computeSens() {
+    const my = ++sensToken; sensGrid = {};
+    ["sensF1", "sensF2", "sensF3"].forEach(id => $(id).textContent = "Computing…");
+    const jobs = []; sensRows().forEach(l => SENS_AD.forEach(a => jobs.push([l, a])));
+    drawSens();
+    (function step(i) {
+      if (my !== sensToken || i >= jobs.length) return;
+      const [l, a] = jobs[i], r = FNSim.run(prep, a, scaled(l));
+      sensGrid[l + ":" + a] = Math.round(100 * lowCount(r, STEPS) / hyd.n);
+      if (i % 3 === 2 || i === jobs.length - 1) drawSens();
+      setTimeout(() => step(i + 1), 0);
+    })(0);
+  }
+
   // ---------- boot ----------
-  $("repName").textContent = `Hydrant, ${DATA.rep.label}`;
-  $("repSub").textContent = `Zone ${DATA.rep.zone} Marquez Knolls / ${Math.round(DATA.rep.elev)} ft / est.`;
+  buildPicks(); setHeader();
   $("colB").textContent = "With valves / 100%";
   $("mappedN").textContent = houses.n.toLocaleString("en-US") + " pts";
   buildTicks();
@@ -690,9 +1027,10 @@ const DATA = /*__DATA__*/null;
     buildZoneMasks();
     let i = 0;
     (function next() {
-      if (i < LEVELS.length) { runs[LEVELS[i]] = FNSim.run(prep, LEVELS[i]); i++; setTimeout(next, 0); return; }
+      if (i < LEVELS.length) { runs[LEVELS[i]] = FNSim.run(prep, LEVELS[i], OVR); i++; setTimeout(next, 0); return; }
       ready = true; $("loading").remove(); $("play").disabled = false;
-      resize(); updatePanel(); fillImpact(); fillCalibration();
+      resize(); updatePanel(); drawXS(); fillImpact(); fillCalibration();
+      setTimeout(computeSens, 400);
     })();
   }
 })();
